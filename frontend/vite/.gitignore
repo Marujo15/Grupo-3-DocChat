@@ -1,0 +1,18 @@
+# Dependências do Node.js
+node_modules/
+
+# Builds
+dist/
+build/
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Cache do Vite
+.vite
+.vite-cache
+
+# Arquivos de compilação do TypeScript
+*.tsbuildinfo

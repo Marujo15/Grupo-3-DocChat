@@ -1,0 +1,18 @@
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Logs gerais
+logs
+*.log
+
+# Arquivos temporários ou de cache
+tmp/
+temp/
+.cache/
+
+
+
+node_modules/
+.env.db
+.env.api
