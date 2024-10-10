@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    env_file:
+      - ./backend/api/.env.api
+    volumes:
+      - ./backend/api:/app
+      - /app/node_modules
+    networks:
+      - network
+    depends_on:
+      - database
+
+  database:
+    image: postgres:13-alpine
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env.db
+    volumes:
+      - database:/var/lib/postgresql/data
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  database:

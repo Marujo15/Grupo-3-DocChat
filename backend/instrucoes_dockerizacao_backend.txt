@@ -1,0 +1,12 @@
+para construir e rodar os containers do Docker (dentro da raiz do projeto):
+docker compose -f docker-compose.dev.yml up --build
+
+para entrar no container do banco de dados:
+docker exec -it grupo-3-docchat-database-1 /bin/bash
+
+entrar no psql:
+psql -U docchat-user -d docchat-db -h localhost
+
+conectar ao banco de dados criado:
+\c docchat-db
+
