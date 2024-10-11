@@ -9,8 +9,6 @@ RUN npm install
 #instalar o ts-node-dev globalmente?
 #RUN npm install -g ts-node-dev
 
-COPY . .
-
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]

@@ -28,6 +28,20 @@ services:
     networks:
       - network
 
+  frontend:
+    build:
+      context: ./frontend/vite
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/vite:/app
+      - /app/node_modules
+    networks:
+      - network
+    depends_on:
+      - api
+
 networks:
   network:
     driver: bridge
