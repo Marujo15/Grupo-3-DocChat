@@ -1,3 +1,7 @@
+não se esquecer de colocar o .env.db na pasta backend e o .env.api na pasta backend>api.
+
+não se esquecer de instalar manualmente as dependências tanto no backenv>api, quanto no frontend>vite.
+
 para construir e rodar os containers do Docker (dentro da raiz do projeto):
 docker compose -f docker-compose.dev.yml up --build
 

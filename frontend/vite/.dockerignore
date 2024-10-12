@@ -57,10 +57,6 @@ docker-compose.yml
 docker-compose.dev.yml
 .dockerignore
 
-# Ignorar arquivos de lock de pacotes (se necessário)
-# Se você não deseja incluir o package-lock.json, descomente a linha abaixo
-# package-lock.json
-
 # Ignorar arquivos estáticos não necessários
 public/
 **/public/
