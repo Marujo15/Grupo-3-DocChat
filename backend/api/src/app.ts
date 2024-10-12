@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import testRoutes from "./routes/testRoutes";
+import scrapeRoutes from "./routes/scrapeRoutes";
 
 dotenv.config();
 
@@ -23,5 +24,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/test", testRoutes);
+app.use("/api/scrape", scrapeRoutes);
 
 export default app;
