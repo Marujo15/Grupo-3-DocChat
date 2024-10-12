@@ -3,8 +3,8 @@
 Thumbs.db
 
 # Ignorar diretórios de dependências
-node_modules
-**/node_modules
+node_modules/
+**/node_modules/
 
 # Ignorar arquivos de log
 logs
@@ -14,43 +14,37 @@ logs
 .env
 .env.local
 .env.*.local
-**/.env
-**/.env.local
-**/.env.*.local
 
 # Ignorar diretórios de build
-dist
-build
-**/dist
-**/build
+dist/
+build/
+**/dist/
+**/build/
 
 # Ignorar arquivos de cache
-.cache
-**/.cache
-.vite
-**/.vite
-.vite-cache
-**/.vite-cache
+.cache/
+**/.cache/
+tmp/
+temp/
+**/tmp/
+**/temp/
 
 # Ignorar arquivos de configuração de editores
-.idea
-.vscode
+.idea/
+.vscode/
 *.sublime*
 
 # Ignorar arquivos de teste e cobertura
-coverage
-**/coverage
+coverage/
+**/coverage/
 *.test.*
 *.spec.*
 
 # Ignorar arquivos temporários
-tmp
-temp
-**/tmp
-**/temp
+*.swp
 
 # Ignorar arquivos relacionados ao Git
-.git
+.git/
 .gitignore
 
 # Ignorar arquivos do Docker
@@ -60,25 +54,11 @@ docker-compose.yml
 docker-compose.dev.yml
 .dockerignore
 
-# Ignorar arquivos de lock de pacotes (se necessário)
-# Remova o comentário se não quiser incluir os arquivos de lock
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
-
 # Ignorar certificados e chaves privadas
-sslcerts
+sslcerts/
 *.pem
 *.key
 
 # Ignorar arquivos de documentação
-docs
-**/docs
-
-# Ignorar imagens e assets não necessários
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
-**/assets
+docs/
+**/docs/
