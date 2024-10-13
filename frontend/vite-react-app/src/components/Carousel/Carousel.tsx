@@ -23,7 +23,7 @@ const Carousel: React.FC = () => {
         const handleResize = () => {
             if (carouselRef.current) {
                 const carouselWidth = carouselRef.current.offsetWidth;
-                const totalCardWidth = cards.length * 210; // 200px card width + 10px gap
+                const totalCardWidth = cards.length * 210;
                 setShowButtons(totalCardWidth > carouselWidth);
             }
         };
