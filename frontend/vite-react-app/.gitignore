@@ -16,3 +16,7 @@ build/
 
 # Arquivos de compilação do TypeScript
 *.tsbuildinfo
+
+
+
+.tmp/
