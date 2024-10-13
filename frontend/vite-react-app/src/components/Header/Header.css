@@ -5,7 +5,7 @@ header {
     gap: 30px;
     height: 100px;
     justify-content: flex-end;
-    max-width: 1260px;
+    max-width: 100vw;
     padding: 1rem;
     width: 100%;
 }
