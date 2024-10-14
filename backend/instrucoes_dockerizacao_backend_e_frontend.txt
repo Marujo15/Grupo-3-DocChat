@@ -1,0 +1,18 @@
+não se esquecer de colocar o .env.db na pasta backend e o .env.api na pasta backend>api.
+
+não se esquecer de instalar manualmente as dependências tanto no backenv>api, quanto no frontend>vite-react-app:
+npm install
+
+para construir e rodar os containers do Docker (dentro da raiz do projeto):
+docker compose -f docker-compose.dev.yml up --build
+
+para entrar no container do banco de dados:
+docker exec -it grupo-3-docchat-database-1 /bin/bash
+
+entrar no psql:
+psql -U docchat-user -d docchat-db -h localhost
+
+conectar ao banco de dados criado:
+\c docchat-db
+
+popular manualmente usando os comandos que estão no 'test.sql' (backend>api>schema.sql).

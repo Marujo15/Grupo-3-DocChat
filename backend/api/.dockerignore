@@ -1,0 +1,64 @@
+# Ignorar arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Ignorar diretórios de dependências
+node_modules/
+**/node_modules/
+
+# Ignorar arquivos de log
+logs
+*.log
+
+# Ignorar arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Ignorar diretórios de build
+dist/
+build/
+**/dist/
+**/build/
+
+# Ignorar arquivos de cache
+.cache/
+**/.cache/
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+# Ignorar arquivos de configuração de editores
+.idea/
+.vscode/
+*.sublime*
+
+# Ignorar arquivos de teste e cobertura
+coverage/
+**/coverage/
+*.test.*
+*.spec.*
+
+# Ignorar arquivos temporários
+*.swp
+
+# Ignorar arquivos relacionados ao Git
+.git/
+.gitignore
+
+# Ignorar arquivos do Docker
+Dockerfile
+Dockerfile.dev
+docker-compose.yml
+docker-compose.dev.yml
+.dockerignore
+
+# Ignorar certificados e chaves privadas
+sslcerts/
+*.pem
+*.key
+
+# Ignorar arquivos de documentação
+docs/
+**/docs/

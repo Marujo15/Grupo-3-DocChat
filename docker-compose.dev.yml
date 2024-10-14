@@ -28,6 +28,24 @@ services:
     networks:
       - network
 
+  frontend:
+    build:
+      context: ./frontend/vite-react-app
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+      - NODE_ENV=development
+    restart: unless-stopped
+    volumes:
+      - ./frontend/vite-react-app:/app
+      - /app/node_modules
+    networks:
+      - network
+    depends_on:
+      - api
+
 networks:
   network:
     driver: bridge
