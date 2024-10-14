@@ -4,14 +4,14 @@ import { Pool, PoolConfig, QueryResult, QueryResultRow } from "pg";
 dotenv.config();
 
 const {
-  DB_USER,
   DB_HOST,
-  DB_NAME,
-  DB_PASSWORD,
   DB_PORT = "5432",
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
 } = process.env;
 
-if (!DB_USER || !DB_HOST || !DB_NAME || !DB_PASSWORD) {
+if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
   console.error(
     "Uma ou mais variáveis de ambiente obrigatórias não estão definidas."
   );
@@ -19,11 +19,11 @@ if (!DB_USER || !DB_HOST || !DB_NAME || !DB_PASSWORD) {
 }
 
 const poolConfig: PoolConfig = {
-  user: DB_USER,
   host: DB_HOST,
-  database: DB_NAME,
-  password: DB_PASSWORD,
   port: parseInt(DB_PORT, 10),
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
 };
 
 export const pool = new Pool(poolConfig);
