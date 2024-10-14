@@ -11,8 +11,6 @@ const requiredEnvVars = [
   "DB_NAME",
   "DB_PASSWORD",
   "CORS_ORIGIN",
-  "SECRET_KEY",
-  "PORT",
 ];
 
 const missingEnvVars = requiredEnvVars.filter((varName) => {
@@ -34,9 +32,9 @@ export const {
   DB_NAME,
   DB_PASSWORD,
   DB_PORT = "5432",
-  SECRET_KEY,
+  SECRET_KEY = "random_secret_password",
   CORS_ORIGIN,
-  PORT,
+  PORT = "3000",
 } = process.env;
 
 const poolConfig: PoolConfig = {
