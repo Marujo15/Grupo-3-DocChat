@@ -3,11 +3,17 @@ import "./ChatArea.css";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
 
+interface Message {
+  sender: "user" | "ai";
+  text: string;
+}
+
 const ChatArea: React.FC = () => {
     const [url, setUrl] = useState("");
     const [question, setQuestion] = useState("");
-    const [answer] = useState("");
+    const [messages, setMessages] = useState<Message[]>([]);
 
+    // Função para carregar dados da URL (pode ser usada para scraping)
     const handleScrape = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
@@ -25,29 +31,70 @@ const ChatArea: React.FC = () => {
         }
     };
 
+    // Função para enviar a pergunta e obter a resposta da IA
     const handleAskQuestion = async (event: React.FormEvent) => {
         event.preventDefault();
-        // Lógica para enviar a pergunta para a IA e obter a resposta
-        // Atualize o estado `answer` com a resposta da IA
+
+        // Adiciona a pergunta à lista de mensagens
+        setMessages((prevMessages) => [...prevMessages, { sender: "user", text: question }]);
+        setQuestion("");
+
+        try {
+            const response = await fetch("http://localhost:3000/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: question }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            // Adiciona a resposta da IA à lista de mensagens
+            setMessages((prevMessages) => [...prevMessages, { sender: "ai", text: data.response }]);
+
+        } catch (error) {
+            console.error("Erro ao fazer a requisição:", error);
+        }
     };
 
     return (
         <div className="chat-area">
+            {/* Formulário para carregar a URL */}
             <form onSubmit={handleScrape} className="input-button-container">
                 <div className="input-with-button">
                     <Input
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
-                        placeholder="Digite aqui a url para carregar os dados"
+                        placeholder="Digite aqui a URL para carregar os dados"
                         className="user-input"
                         id="load-data-input"
                         pattern="https?://.+"
                         title="Por favor, insira uma URL válida começando com http:// ou https://"
                         required
                     />
-                    <Button type="submit" id="load-data-btn" onClick={() => {}}>Carregar dados</Button>
+                    <Button type="submit" id="load-data-btn" className="url-button" onClick={() => {}}>
+                        Carregar dados
+                    </Button>
                 </div>
             </form>
+
+            {/* Área do chat */}
+            <div className="chat-messages">
+                {messages.map((msg, index) => (
+                    <div key={index} className={`message ${msg.sender}`}>
+                        <div className={`bubble ${msg.sender}`}>
+                            <p>{msg.text}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Formulário para enviar perguntas */}
             <form onSubmit={handleAskQuestion} className="input-button-container">
                 <div className="input-with-button">
                     <Input
@@ -61,15 +108,6 @@ const ChatArea: React.FC = () => {
                     </Button>
                 </div>
             </form>
-            <div className="input-container">
-                <Input
-                    value={answer}
-                    onChange={() => {}}
-                    readOnly
-                    className="ai-input"
-                />
-            </div>
-
         </div>
     );
 };

@@ -1,71 +1,87 @@
 .chat-area {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #3e3e3e;
+    border-radius: 10px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    margin: 50px auto;
-    max-width: 800px;
-}
-
-.chat-area form {
-    margin-bottom: 1rem;
-    width: 100%;
-}
-
-.input-button-container,
-.input-container {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    height: 50vh;
+}
+
+.url-input-container {
+    margin-bottom: 30px;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: #3e3e3e;
+    border-radius: 20px;
+    padding: 10px;
+    height: 100%;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.message.ai {
+    justify-content: flex-start;
+}
+
+.bubble {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 20px;
+    color: white;
+    font-size: 14px;
+    background-color: #8A8A8A;
+}
+
+.bubble.user {
+    text-align: right;
+}
+
+.bubble.ai {
+    text-align: left;
 }
 
 .input-with-button {
-    align-items: center;
     display: flex;
-    position: relative;
+    align-items: center;
     width: 100%;
 }
 
-.input-with-button input {
-    flex: 1;
-    padding-right: 4rem;
+.user-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    font-size: 14px;
 }
 
-.input-with-button button {
-    position: absolute;
-    right: 10px;
-}
-
-.ask-button {
+.ask-button, .url-button {
     background-color: #10A37F;
-    border: none;
-    border-radius: 1rem;
     color: white;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-}
-
-.ask-button:hover {
-    background-color: #0c8164;
-}
-
-#load-data-btn {
-    background-color: #10A37F;
     border: none;
-    border-radius: 1rem;
-    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
     cursor: pointer;
-    padding: 0.5rem 1rem;
 }
 
-#load-data-btn:hover {
-    background-color: #0c8164;
-}
-
-.ai-input {
-    display: none;
-    flex: 1;
-    margin-left: 0.5rem;
+.ask-button:hover, .url-button:hover {
+    background-color: #218838;
 }
