@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import testRoutes from "./routes/testRoutes";
 import scrapeRoutes from "./routes/scrapeRoutes";
 import vectorRoutes from "./routes/vectorRoutes";
+import questionRoutes from "./routes/questionRoutes";
 import { pool } from "./config/database";
 import { initializeVectorStore } from "./config/initVectorStore";
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use("/api/test", testRoutes);
 app.use("/api/scrape", scrapeRoutes);
 app.use("/api/vector", vectorRoutes);
+app.use("/api/question", questionRoutes);
 
 //função para inicializar o banco de dados e vector store (ambos PostgreSQL):
 export const startServer = async () => {
