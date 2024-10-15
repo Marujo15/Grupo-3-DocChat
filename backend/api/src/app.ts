@@ -1,13 +1,11 @@
 import express, { Application } from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import testRoutes from "./routes/testRoutes";
 import scrapeRoutes from "./routes/scrapeRoutes";
 import routes from "./routes/routes";
 import { CORS_ORIGIN } from "./config/database";
-
-dotenv.config();
+import chatRoutes from "./routes/chatRoutes"
 
 console.log("Origem do CORS:", CORS_ORIGIN);
 
