@@ -1,4 +1,5 @@
 import { questionService } from "../services/questionService";
+import { similaritySearchService } from "../services/similaritySearchService";
 import { Request, Response } from "express";
 
 export const questionController = {
@@ -12,13 +13,23 @@ export const questionController = {
       const embeddedQuestion = await questionService.postToEmbedQuestion(
         question
       );
+      console.log(
+        `embeddedQuestion do questionController: ${embeddedQuestion}`
+      );
+
+      const similarDocs = await similaritySearchService.searchSimilarDocuments(
+        embeddedQuestion
+      );
+      similarDocs.forEach((doc) => {
+        console.log(`Content: ${doc.content}, Similarity: ${doc.similarity}`);
+      });
 
       res.status(200).json({
         success: true,
-        embeddedQuestion: embeddedQuestion,
+        similarDocuments: similarDocs,
       });
     } catch (error) {
-      res.status(500).json({ error: "Failed to catch question" });
+      res.status(500).json({ error: "Failed to process question" });
     }
   },
 };
