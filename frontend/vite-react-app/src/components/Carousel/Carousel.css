@@ -1,0 +1,22 @@
+.carousel-container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    max-width: 1260px;
+    position: relative;
+    width: 100vw;
+}
+
+.carousel {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    overflow-x: hidden;
+    padding: 1rem;
+    scroll-behavior: smooth;
+    width: 100%;
+}
+  
