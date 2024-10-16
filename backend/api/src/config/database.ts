@@ -1,22 +1,41 @@
+import { error, log } from "console";
 import dotenv from "dotenv";
+import path from "path";
 import { Pool, PoolConfig, QueryResult, QueryResultRow } from "pg";
 
 dotenv.config();
 
-const {
+const requiredEnvVars = [
+  "DB_USER",
+  "DB_HOST",
+  "DB_NAME",
+  "DB_PASSWORD",
+  "CORS_ORIGIN",
+];
+
+const missingEnvVars = requiredEnvVars.filter((varName) => {
+  return !process.env[varName];
+});
+
+if (missingEnvVars.length > 0) {
+  console.error(
+    "As seguintes variáveis de ambiente obrigatórias não estão definidas:",
+    missingEnvVars.join(", ")
+  );
+  process.exit(1);
+}
+
+// Extraindo as variáveis de ambiente
+export const {
   DB_USER,
   DB_HOST,
   DB_NAME,
   DB_PASSWORD,
   DB_PORT = "5432",
+  SECRET_KEY = "random_secret_password",
+  CORS_ORIGIN,
+  PORT = "3000",
 } = process.env;
-
-if (!DB_USER || !DB_HOST || !DB_NAME || !DB_PASSWORD) {
-  console.error(
-    "Uma ou mais variáveis de ambiente obrigatórias não estão definidas."
-  );
-  process.exit(1);
-}
 
 const poolConfig: PoolConfig = {
   user: DB_USER,

@@ -1,0 +1,26 @@
+.carousel-button {
+    background-color: #4F4F4F;
+    border: none;
+    border-radius: 40px;
+    color: #D9D9D9;
+    cursor: pointer;
+    font-size: 2rem;
+    font-weight: 900;
+    height: 50px;
+    margin: 0 10px;
+    padding: 0.5rem 1rem;
+    width: 50px;
+    z-index: 1;
+}
+  
+.carousel-button.left {
+    left: 0;
+}
+  
+.carousel-button.right {
+    right: 0;
+}
+  
+.carousel-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
