@@ -1,9 +1,8 @@
-import express from "express";
 import { Router } from 'express';
-import { scrapeController } from '../controllers/scrapeController';
+import scrapeController from '../controllers/scrapeController';
 
-const router: Router = express.Router();
+const router = Router();
 
-router.post('/', scrapeController.scrape);
+router.post('/', scrapeController.scrapeController);
 
 export default router;
