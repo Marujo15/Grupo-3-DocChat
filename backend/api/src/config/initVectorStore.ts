@@ -32,20 +32,13 @@ const config = {
   //estratégia de distância (cosine é a padrão)
 };
 
-let vectorStore: PGVectorStore | null = null;
-
 export const initializeVectorStore = async () => {
   try {
-    if (!vectorStore) {
-      vectorStore = await PGVectorStore.initialize(embeddings, config);
-      console.log("Vector Store initialized successfully.");
-    }
+    const vectorStore = await PGVectorStore.initialize(embeddings, config);
+    console.log("Vector Store initialized successfully.");
     return vectorStore;
   } catch (error) {
     console.error("Failed to initialize vector store:", error);
     throw error;
   }
 };
-
-export { vectorStore };
-//exporta o vectorStore para ser usado em outros lugares
