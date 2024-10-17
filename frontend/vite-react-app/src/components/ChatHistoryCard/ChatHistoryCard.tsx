@@ -1,10 +1,6 @@
 import React from "react";
 import "./ChatHistoryCard.css";
-
-interface ChatHistoryCardProps {
-    date: string;
-    title: string;
-}
+import { ChatHistoryCardProps } from "../../interfaces";
 
 const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title }) => {
     return (

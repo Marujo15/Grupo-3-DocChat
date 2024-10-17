@@ -1,17 +1,6 @@
 import React from "react";
 import "./Input.css";
-
-interface InputProps {
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
-    className?: string;
-    id?: string;
-    pattern?: string;
-    title?: string;
-    required?: boolean;
-    readOnly?: boolean; // Adiciona a propriedade readOnly
-}
+import { InputProps } from "../../interfaces";
 
 const Input: React.FC<InputProps> = ({
     value,
