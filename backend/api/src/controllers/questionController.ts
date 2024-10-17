@@ -13,16 +13,16 @@ export const questionController = {
       const embeddedQuestion = await questionService.postToEmbedQuestion(
         question
       );
-      // console.log(
-      //   `embeddedQuestion do questionController: ${embeddedQuestion}`
-      // );
+      console.log(
+        `embeddedQuestion do questionController: ${embeddedQuestion}`
+      );
 
       const similarDocs = await similaritySearchService.searchSimilarDocuments(
         embeddedQuestion
       );
-      // similarDocs.forEach((doc) => {
-      //   console.log(`Content: ${doc.content}, Difference: ${doc.similarity}`);
-      // });
+      similarDocs.forEach((doc) => {
+        console.log(`Content: ${doc.content}, Similarity: ${doc.similarity}`);
+      });
 
       res.status(200).json({
         success: true,
