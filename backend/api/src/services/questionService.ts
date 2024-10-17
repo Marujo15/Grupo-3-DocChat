@@ -6,10 +6,10 @@ const embeddings = new OpenAIEmbeddings({
 });
 
 export const questionService = {
-  postToEmbedQuestion: async (question: string): Promise<number[]> => {
+  postToEmbedQuestion: async (question: string) => {
     try {
       const questionEmbedding = await embeddings.embedQuery(question);
-      return questionEmbedding;
+      console.log(questionEmbedding);
     } catch (err: any) {
       console.error(
         `Erro ao gerar embedding da questão fornecida: ${err.message}`
