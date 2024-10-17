@@ -6,6 +6,7 @@ import ChatArea from "./components/ChatArea/ChatArea";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import "./App.css";
+import UserPage from "./components/UserPage/UserPage";
 
 const App: React.FC = () => {
     return (
@@ -13,6 +14,7 @@ const App: React.FC = () => {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/user" element={<UserPage />} />
                 <Route
                     path="/"
                     element={
