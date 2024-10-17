@@ -4,10 +4,10 @@ export const similaritySearchService = {
   searchSimilarDocuments: async (embeddedQuestion: number[]) => {
     try {
       const queryText = `
-          SELECT content, vector <=> $1 AS difference
-          FROM testlangchainjs
-          ORDER BY difference ASC
-          LIMIT 100;
+        SELECT content, vector <=> $1 AS difference
+        FROM testlangchainjs
+        WHERE vector <=> $1 < 0.6
+        ORDER BY difference ASC;
         `;
 
       //   console.log(
