@@ -17,15 +17,14 @@ services:
       - database
 
   database:
-    image: pgvector/pgvector:pg16
+    image: postgres:13-alpine
     ports:
       - "5432:5432"
-    restart: always
+    restart: unless-stopped
     env_file:
       - ./backend/.env.db
     volumes:
       - database:/var/lib/postgresql/data
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - network
 
