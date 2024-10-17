@@ -5,6 +5,8 @@ import authRouter from "./authRoutes";
 import { authenticateJWT } from "../middlewares/auth";
 import testRoutes from "./testRoutes";
 import scrapeRoutes from "./scrapeRoutes";
+import vectorRoutes from "./vectorRoutes";
+import questionRoutes from "./questionRoutes";
 
 const router = Router();
 
@@ -13,5 +15,7 @@ router.use("/users", authenticateJWT, userRouter);
 router.use("/auth", authRouter);
 router.use("/test", testRoutes);
 router.use("/scrape", scrapeRoutes);
+router.use("/vector", vectorRoutes);
+router.use("/question", questionRoutes);
 
 export default router;

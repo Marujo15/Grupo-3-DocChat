@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@langchain/community": "^0.3.5",
+    "@langchain/community": "^0.3.6",
     "@langchain/core": "^0.3.11",
     "@langchain/openai": "^0.3.7",
     "@types/express-validator": "^3.0.0",
@@ -28,9 +28,9 @@
     "langchain": "^0.3.2",
     "openai": "^4.67.3",
     "pg": "^8.13.0",
+    "turndown": "^7.2.0",
     "uuid": "^10.0.0",
-    "uuidv4": "^6.2.13",
-    "langchain": "^0.0.x"
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
