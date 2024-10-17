@@ -25,7 +25,6 @@ if (missingEnvVars.length > 0) {
   process.exit(1);
 }
 
-// Extraindo as variáveis de ambiente
 export const {
   DB_USER,
   DB_HOST,
@@ -56,4 +55,5 @@ export const query = <T extends QueryResultRow = any>(
   text: string,
   params?: any[]
 ): Promise<QueryResult<T>> => pool.query<T>(text, params);
-//QueryResultRow é uma interface que representa uma linha retornada pelo banco de dados, onde cada coluna é um par chave-valor.
+
+// Observação: QueryResultRow é uma interface que representa uma linha retornada pelo banco de dados, onde cada coluna é um par chave-valor.
