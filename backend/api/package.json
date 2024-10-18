@@ -29,8 +29,7 @@
     "openai": "^4.67.3",
     "pg": "^8.13.0",
     "turndown": "^7.2.0",
-    "uuid": "^10.0.0",
-    "uuidv4": "^6.2.13"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -40,6 +39,8 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^22.7.5",
     "@types/pg": "^8.11.10",
+    "@types/turndown": "^5.0.5",
+    "@types/uuid": "^10.0.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.6.3"
   },

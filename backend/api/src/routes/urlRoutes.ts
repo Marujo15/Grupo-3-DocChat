@@ -1,9 +1,9 @@
 import express from "express";
-import { testController } from "../controllers/testController";
+import { urlController } from "../controllers/urlController";
 import { Router } from "express";
 
 const router: Router = express.Router();
 
-router.get("/", testController.getAllTests);
+router.post("/", urlController.saveUrl);
 
 export default router;

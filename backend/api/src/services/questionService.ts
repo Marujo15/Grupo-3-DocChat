@@ -1,7 +1,8 @@
 import { OpenAIEmbeddings } from "@langchain/openai";
+import { OPENAI_API_KEY } from "../config";
 
 const embeddings = new OpenAIEmbeddings({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
   model: "text-embedding-3-small",
 });
 
