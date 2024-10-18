@@ -1,14 +1,13 @@
 .chat-area {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #3e3e3e;
     border-radius: 10px;
-    padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     height: 50vh;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 100%;
 }
 
 .url-input-container {
@@ -16,15 +15,14 @@
 }
 
 .chat-messages {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-bottom: 20px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    background-color: #3e3e3e;
-    border-radius: 20px;
-    padding: 10px;
+    flex-grow: 1;
     height: 100%;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    padding: 10px 0;
 }
 
 .message {
@@ -41,16 +39,12 @@
 }
 
 .bubble {
-    max-width: 60%;
-    padding: 10px;
+    background-color: #8A8A8A;
     border-radius: 20px;
     color: white;
     font-size: 14px;
-    background-color: #8A8A8A;
-}
-
-.bubble.user {
-    text-align: right;
+    max-width: 60%;
+    padding: 10px;
 }
 
 .bubble.ai {
@@ -58,30 +52,56 @@
 }
 
 .input-with-button {
-    display: flex;
     align-items: center;
+    display: flex;
     width: 100%;
 }
 
 .user-input {
-    flex-grow: 1;
-    margin-right: 10px;
-    padding: 10px;
-    border-radius: 20px;
     border: 1px solid #ccc;
+    border-radius: 20px;
+    flex-grow: 1;
     font-size: 14px;
+    margin-right: 10px;
 }
 
 .ask-button, .url-button {
     background-color: #10A37F;
-    color: white;
     border: none;
-    padding: 10px 20px;
     border-radius: 20px;
-    font-size: 14px;
+    color: white;
     cursor: pointer;
+    font-size: 14px;
+    padding: 10px 20px;
 }
 
 .ask-button:hover, .url-button:hover {
     background-color: #218838;
+}
+
+.url-loaded-message {
+    background-color: #3e3e3e;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 20px;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+.url-loaded-message a {
+    color: white;
+    text-decoration: none;
+}
+
+#load-data-input, #ask-input {
+    height: 22px;
+}
+
+.bubble.user {
+    background-color: #3e3e3e;
+    padding: 9px 30px;
+    text-align: right;
 }

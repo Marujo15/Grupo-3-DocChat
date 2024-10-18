@@ -9,6 +9,7 @@
     height: 60vh;
     justify-content: center;
     margin-top: 10vh;
+    min-width: 720px;
     width: 50vw;
 }
 

@@ -32,5 +32,50 @@ header {
     display: flex;
     flex-direction: row;
     gap: 10px;
+    justify-content: space-between;
+}
+
+#login-register-div {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
     justify-content: flex-end;
+}
+
+#new-chat-btn {
+    align-items: center;
+    border: none;
+    border-radius: 40px;
+    color: #D9D9D9;
+    cursor: pointer;
+    display: flex;
+    font-size: 2rem;
+    font-weight: 900;
+    height: 40px;
+    justify-content: flex-start;
+    margin: 0 10px;
+    overflow: hidden;
+    padding: 0.5rem 1rem;
+    transition: width 0.3s ease;
+    width: 60px;
+}
+
+#new-chat-btn:hover {
+    background-color: #1a1a1a;
+    width: 220px;
+}
+
+#new-chat-btn span {
+    display: none;
+    margin-left: 10px;
+}
+
+#new-chat-btn:hover span {
+    display: inline;
+}
+
+#new-chat-span {
+    font-size: medium;
+    white-space: nowrap;
 }

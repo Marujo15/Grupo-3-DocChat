@@ -7,6 +7,7 @@
     font-size: 2rem;
     font-weight: 900;
     height: 50px;
+    line-height: 0.8;
     margin: 0 10px;
     padding: 0.5rem 1rem;
     width: 50px;
@@ -21,6 +22,7 @@
     right: 0;
 }
   
-.carousel-button:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+.carousel-button:active {
+    outline: none;
+    box-shadow: none; 
 }

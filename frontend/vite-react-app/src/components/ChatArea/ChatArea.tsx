@@ -2,16 +2,13 @@ import React, { useState } from "react";
 import "./ChatArea.css";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
-
-interface Message {
-  sender: "user" | "ai";
-  text: string;
-}
+import { Message } from "../../interfaces";
 
 const ChatArea: React.FC = () => {
     const [url, setUrl] = useState("");
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
+    const [loadedUrls, setLoadedUrls] = useState<string[]>([]);
 
     // Função para carregar dados da URL (pode ser usada para scraping)
     const handleScrape = async (event: React.FormEvent) => {
@@ -26,6 +23,8 @@ const ChatArea: React.FC = () => {
             });
             const data = await response.json();
             console.log(data);
+            setLoadedUrls((prevUrls) => [...prevUrls, url]);
+            setUrl(""); // Limpa o input após carregar a URL
         } catch (error) {
             console.error("Error:", error);
         }
@@ -83,6 +82,17 @@ const ChatArea: React.FC = () => {
                 </div>
             </form>
 
+            {/* Mensagem de URLs carregadas */}
+            {loadedUrls.length > 0 && (
+                <div className="url-loaded-message">
+                    {loadedUrls.map((loadedUrl, index) => (
+                        <p key={index}>
+                            Url <a href={loadedUrl} target="_blank" rel="noopener noreferrer">{loadedUrl}</a> carregada!
+                        </p>
+                    ))}
+                </div>
+            )}
+
             {/* Área do chat */}
             <div className="chat-messages">
                 {messages.map((msg, index) => (
@@ -102,6 +112,7 @@ const ChatArea: React.FC = () => {
                         onChange={(e) => setQuestion(e.target.value)}
                         placeholder="Como posso ajudar?"
                         className="user-input"
+                        id="ask-input"
                     />
                     <Button type="submit" id="ask-button" className="ask-button" onClick={() => {}}>
                         Perguntar
