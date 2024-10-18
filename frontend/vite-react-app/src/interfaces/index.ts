@@ -22,5 +22,20 @@ export interface InputProps {
     pattern?: string;
     title?: string;
     required?: boolean;
-    readOnly?: boolean; // Adiciona a propriedade readOnly
+    readOnly?: boolean;
+}
+
+export interface Message {
+    sender: "user" | "ai";
+    text: string;
+}
+
+export interface AuthContextType {
+    username: string;
+    setUsername: (username: string) => void;
+}
+
+export interface Chat {
+    id: string;
+    name: string;
 }
