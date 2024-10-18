@@ -1,4 +1,4 @@
-import { query } from "../config/database";
+import { query } from "../database/database";
 
 export const similaritySearchService = {
   searchSimilarDocuments: async (embeddedQuestion: number[]) => {

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../config/database";
+import { SECRET_KEY } from "../database/database";
 
 export const authenticateJWT = (
   req: Request,
