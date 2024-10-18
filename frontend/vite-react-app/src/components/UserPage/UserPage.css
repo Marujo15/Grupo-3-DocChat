@@ -1,3 +1,72 @@
+.user-page {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    justify-content: center;
+    min-width: 720px;
+    padding: 1rem;
+    width: 80vw;
+}
+
+.user-page section {
+    align-items: flex-start;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 1rem 1rem 1rem;
+}
+
 .user-button {
     border-radius: 20px;
+}
+
+#loaded-urls, #saved-chats {
+    background-color: #4f4f4f;
+    border-radius: 20px;
+    font-size: 1rem;
+    padding: 0.5rem 2rem;
+    width: 60vw;
+}
+
+.user-page section ul {
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 1rem;
+    padding: 0.5rem 2rem;
+    width: 60vw;
+}
+
+.loaded-url-item, .saved-chat-item {
+    align-items: center;
+    border-bottom: 1px solid #4f4f4f;
+    display: flex;
+    flex-direction: row;
+    font-size: 1rem;
+    justify-content: space-between;
+    padding: 0 2rem;
+    width: 100%;
+}
+
+.loaded-url-item a, .saved-chat-item span {
+    align-items: center;
+    color: inherit;
+    display: flex;
+    flex-direction: row;
+    text-decoration: none;
+}
+
+.delete-btn, .edit-btn, .save-btn {
+    background-color: transparent;
+}
+
+.delete-btn:hover, .edit-btn:hover, .save-btn:hover {
+    background-color: transparent;
+}
+
+.chat-name-input {
+    height: 20px;
 }

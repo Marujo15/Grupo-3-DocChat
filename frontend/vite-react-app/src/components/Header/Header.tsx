@@ -1,12 +1,23 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./Header.css";
 import { HeaderProps } from "../../interfaces";
-import { getInitials } from "../../utils/getInitials";
 import docChatIcon from "../../assets/svg/Chat_Add.svg";
 
-const Header: React.FC<HeaderProps> = ({ variant = "default", userName = "" }) => {
+const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
     const navigate = useNavigate();
+    const { username, setUsername } = useAuth();
+
+    const isAuthenticated = () => {
+        return !!username;
+    };
+
+    const handleLogout = () => {
+        setUsername("");
+        localStorage.removeItem("username");
+        navigate("/login");
+    };
 
     return (
         <header className={`header ${variant}`}>
@@ -19,8 +30,16 @@ const Header: React.FC<HeaderProps> = ({ variant = "default", userName = "" }) =
                                 <span id="new-chat-span">Nova Conversa</span>
                             </button>
                             <div id="login-register-div">
-                                <button onClick={() => navigate("/login")}>Entrar</button>
-                                <button onClick={() => navigate("/register")}>Cadastrar</button>
+                                {isAuthenticated() ? (
+                                    <button className="user-area-button" onClick={() => navigate("/user")}>
+                                        Área do usuário
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button onClick={() => navigate("/login")}>Entrar</button>
+                                        <button onClick={() => navigate("/register")}>Cadastrar</button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </>
@@ -28,21 +47,27 @@ const Header: React.FC<HeaderProps> = ({ variant = "default", userName = "" }) =
                 {variant === "login" && (
                     <div>
                         <button className="back-button" onClick={() => navigate("/")}>
-                        Voltar</button>
+                            Voltar
+                        </button>
                         <button onClick={() => navigate("/register")}>Cadastrar</button>
                     </div>
                 )}
                 {variant === "register" && (
                     <div>
                         <button className="back-button" onClick={() => navigate("/")}>
-                            Voltar</button>
+                            Voltar
+                        </button>
                         <button onClick={() => navigate("/login")}>Entrar</button>
                     </div>
                 )}
                 {variant === "user" && (
-                    <div>
-                        <button className="back-button" onClick={() => navigate("/")}>Voltar</button>
-                        <button className="user-button">{getInitials(userName)}</button>
+                    <div className="user-header">
+                        <button className="back-button" onClick={() => navigate("/")}>
+                            Voltar
+                        </button>
+                        <button className="logout-button" onClick={handleLogout}>
+                            Logout
+                        </button>
                     </div>
                 )}
             </div>

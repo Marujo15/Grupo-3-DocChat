@@ -9,10 +9,27 @@ const ChatArea: React.FC = () => {
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [loadedUrls, setLoadedUrls] = useState<string[]>([]);
+    const [buttonText, setButtonText] = useState("Carregar dados");
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-    // Função para carregar dados da URL (pode ser usada para scraping)
+    // Function to scrape the URL and load the data
     const handleScrape = async (event: React.FormEvent) => {
         event.preventDefault();
+
+        // Check if the URL is already loaded
+        if (loadedUrls.includes(url)) {
+            setErrorMessage("Esta URL já foi carregada.");
+            setTimeout(() => {
+                setErrorMessage("");
+            }, 3000);
+            return;
+        }
+
+        setIsLoading(true);
+        setButtonText("Carregando...");
+        setErrorMessage("");
+        
         try {
             const response = await fetch("http://localhost:3000/api/scrape", {
                 method: "POST",
@@ -24,19 +41,25 @@ const ChatArea: React.FC = () => {
             const data = await response.json();
             console.log(data);
             setLoadedUrls((prevUrls) => [...prevUrls, url]);
-            setUrl(""); // Limpa o input após carregar a URL
+            setUrl("");
         } catch (error) {
             console.error("Error:", error);
+        } finally {
+            setIsLoading(false);
+            setButtonText("Dados carregados!");
+            setTimeout(() => {
+                setButtonText("Carregar dados");
+            }, 3000);
         }
     };
 
-    // Função para enviar a pergunta e obter a resposta da IA
+    // Function to ask a question to the AI
     const handleAskQuestion = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        // Adiciona a pergunta à lista de mensagens
+        // Adds the user question to the messages list
         setMessages((prevMessages) => [...prevMessages, { sender: "user", text: question }]);
-        setQuestion("");
+        setQuestion("Carregando...");
 
         try {
             const response = await fetch("http://localhost:3000/api/chat", {
@@ -53,7 +76,7 @@ const ChatArea: React.FC = () => {
 
             const data = await response.json();
 
-            // Adiciona a resposta da IA à lista de mensagens
+            // Adds the AI response to the messages list
             setMessages((prevMessages) => [...prevMessages, { sender: "ai", text: data.response }]);
 
         } catch (error) {
@@ -63,7 +86,7 @@ const ChatArea: React.FC = () => {
 
     return (
         <div className="chat-area">
-            {/* Formulário para carregar a URL */}
+            {/* Form to load url */}
             <form onSubmit={handleScrape} className="input-button-container">
                 <div className="input-with-button">
                     <Input
@@ -77,12 +100,20 @@ const ChatArea: React.FC = () => {
                         required
                     />
                     <Button type="submit" id="load-data-btn" className="url-button" onClick={() => {}}>
-                        Carregar dados
+                        {isLoading ? (
+                            <div className="loading-container">
+                                <div className="spinner"></div>
+                                <span>{buttonText}</span>
+                            </div>
+                        ) : (
+                            buttonText
+                        )}
                     </Button>
                 </div>
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
             </form>
 
-            {/* Mensagem de URLs carregadas */}
+            {/* loaded url message */}
             {loadedUrls.length > 0 && (
                 <div className="url-loaded-message">
                     {loadedUrls.map((loadedUrl, index) => (
@@ -93,7 +124,7 @@ const ChatArea: React.FC = () => {
                 </div>
             )}
 
-            {/* Área do chat */}
+            {/* Chat area */}
             <div className="chat-messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.sender}`}>
@@ -104,7 +135,7 @@ const ChatArea: React.FC = () => {
                 ))}
             </div>
 
-            {/* Formulário para enviar perguntas */}
+            {/* Form to send questions */}
             <form onSubmit={handleAskQuestion} className="input-button-container">
                 <div className="input-with-button">
                     <Input
