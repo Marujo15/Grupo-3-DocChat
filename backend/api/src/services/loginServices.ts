@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { comparePassword } from "../utils/comparePassword";
-import { SECRET_KEY } from "../config/database";
 import * as userRepository from "../repositories/userRepository";
 import { ErrorApi } from "../errors/ErrorApi";
+import { SECRET_KEY } from "../config";
 
 export const getUser = async (email: string) => {
   try {

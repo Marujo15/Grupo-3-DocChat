@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { authenticate, logout } from "../controllers/loginController";
-import { createUser } from "../controllers/userController";
+import { loginController } from "../controllers/loginController";
+import { userCotroller } from "../controllers/userController";
 
 const router: Router = Router();
 
-router.post("/login", authenticate);
-router.delete("/logout", logout);
-router.post("/register", createUser);
+router.post("/login", loginController.authenticate);
+router.delete("/logout", loginController.logout);
+router.post("/register", userCotroller.createUser);
 
 export default router;

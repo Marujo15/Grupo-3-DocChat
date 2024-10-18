@@ -1,5 +1,4 @@
-import { timeStamp } from "console";
-import { pool } from "../config/database";
+import { pool } from "../database/database";
 import { ErrorApi } from "../errors/ErrorApi";
 import { IUser } from "../interfaces/user";
 
