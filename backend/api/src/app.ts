@@ -4,7 +4,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import testRoutes from "./routes/testRoutes";
 import scrapeRoutes from "./routes/scrapeRoutes";
-import chatRoutes from "./routes/chatRoutes"
 
 dotenv.config();
 
@@ -26,7 +25,5 @@ app.use(cookieParser());
 
 app.use("/api/test", testRoutes);
 app.use("/api/scrape", scrapeRoutes);
-app.use('/api/chat', chatRoutes);
-
 
 export default app;
