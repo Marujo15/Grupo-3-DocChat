@@ -1,17 +1,21 @@
 import React from "react";
-import Button from "../Button/Button";
 import "./CarouselButton.css";
 
 interface CarouselButtonProps {
     direction: "left" | "right";
     onClick: () => void;
+    disabled?: boolean;
 }
 
-const CarouselButton: React.FC<CarouselButtonProps> = ({ direction, onClick }) => {
+const CarouselButton: React.FC<CarouselButtonProps> = ({ direction, onClick, disabled }) => {
     return (
-        <Button onClick={onClick} className={`carousel-button ${direction}`}>
+        <button
+            className={`carousel-button ${direction}`}
+            onClick={onClick}
+            disabled={disabled}
+        >
             {direction === "left" ? "<" : ">"}
-        </Button>
+        </button>
     );
 };
 

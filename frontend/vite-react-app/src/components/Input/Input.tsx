@@ -1,6 +1,6 @@
 import React from "react";
 import "./Input.css";
-import { InputProps } from "../../interfaces";
+import { InputProps } from "../../interfaces/InputInterfaces.ts";
 
 const Input: React.FC<InputProps> = ({
     value,
@@ -11,7 +11,7 @@ const Input: React.FC<InputProps> = ({
     pattern,
     title,
     required,
-    readOnly // Adiciona a propriedade readOnly
+    readOnly
 }) => {
     return (
         <input
@@ -23,7 +23,7 @@ const Input: React.FC<InputProps> = ({
             pattern={pattern}
             title={title}
             required={required}
-            readOnly={readOnly} // Adiciona a propriedade readOnly
+            readOnly={readOnly}
         />
     );
 };

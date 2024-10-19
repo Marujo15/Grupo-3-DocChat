@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./Header.css";
-import { HeaderProps } from "../../interfaces";
+import { HeaderProps } from "../../interfaces/HeaderInterfaces.ts";
 import docChatIcon from "../../assets/svg/Chat_Add.svg";
 
 const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
