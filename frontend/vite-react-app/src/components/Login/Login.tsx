@@ -33,7 +33,7 @@ const Login: React.FC = () => {
             if (data.auth) {
                 setUsername(data.username);
                 localStorage.setItem("username", data.username);
-                navigate("/user");
+                navigate("/");
             } else {
                 setError("Email ou senha inválidos");
                 setTimeout(() => {
@@ -72,9 +72,9 @@ const Login: React.FC = () => {
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             {showPassword ? (
-                                <img src="/images/Hide.svg" alt="Senha oculta" />
+                                <img className="password-icon" src="/images/Hide.svg" alt="Senha oculta" />
                             ) : (
-                                <img src="/images/Show.svg" alt="Senha aberta" />
+                                <img className="password-icon" src="/images/Show.svg" alt="Senha aberta" />
                             )}
                         </span>
                     </div>

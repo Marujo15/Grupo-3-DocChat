@@ -7,7 +7,7 @@ header {
     justify-content: flex-end;
     max-width: 80vw;
     padding: 1rem;
-    width: 100%;
+    width: 80vw;
 }
 
 .header-buttons {
@@ -55,10 +55,8 @@ header {
     font-weight: 900;
     height: 40px;
     justify-content: flex-start;
-    margin: 0 10px;
     overflow: hidden;
     padding: 0.5rem 1rem;
-    transition: width 0.3s ease;
     width: 60px;
 }
 

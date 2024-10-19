@@ -2,10 +2,16 @@ import React, { useEffect, useState } from "react";
 import { getUserData } from "../../utils/getUserData";
 import Header from "../Header/Header";
 import "./UserPage.css";
-import { Chat } from "../../interfaces/index";
+import { Chat } from "../../interfaces/ChatInterfaces.ts";
+import Input from "../Input/Input";
+import Button from "../Button/Button";
 
 const UserPage: React.FC = () => {
     const [userName, setUserName] = useState("");
+    const [url, setUrl] = useState("");
+    const [buttonText, setButtonText] = useState("Carregar dados");
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [loadedUrls, setLoadedUrls] = useState<string[]>([
         "https://example.com",
         "https://example.org",
@@ -51,12 +57,77 @@ const UserPage: React.FC = () => {
         setNewChatName("");
     };
 
+    // Function to scrape the URL and load the data
+    const handleScrape = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        // Check if the URL is already loaded
+        if (loadedUrls.includes(url)) {
+            setErrorMessage("Esta URL já foi carregada.");
+            setTimeout(() => {
+                setErrorMessage("");
+            }, 3000);
+            return;
+        }
+
+        setIsLoading(true);
+        setButtonText("Carregando...");
+        setErrorMessage("");
+        
+        try {
+            const response = await fetch("http://localhost:3000/api/scrape", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ url }),
+            });
+            const data = await response.json();
+            console.log(data);
+            setLoadedUrls((prevUrls) => [...prevUrls, url]);
+            setUrl("");
+        } catch (error) {
+            console.error("Error:", error);
+        } finally {
+            setIsLoading(false);
+            setButtonText("Dados carregados!");
+            setTimeout(() => {
+                setButtonText("Carregar dados");
+            }, 3000);
+        }
+    };
+
     return (
         <>
             <Header variant="user" userName={userName} />
 
             <div className="user-page">
                 <section>
+                    <form onSubmit={handleScrape} className="input-button-container">
+                        <div className="input-with-button">
+                            <Input
+                                value={url}
+                                onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setUrl(e.target.value)}
+                                placeholder="Digite aqui a URL para carregar os dados"
+                                className="user-input"
+                                id="load-data-input"
+                                pattern="https?://.+"
+                                title="Por favor, insira uma URL válida começando com http:// ou https://"
+                                required
+                            />
+                            <Button type="submit" id="load-data-btn" className="url-button" onClick={() => {}}>
+                                {isLoading ? (
+                                    <div className="loading-container">
+                                        <div className="spinner"></div>
+                                        <span>{buttonText}</span>
+                                    </div>
+                                ) : (
+                                    buttonText
+                                )}
+                            </Button>
+                        </div>
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    </form>
                     <h2 id="loaded-urls">URLs Carregadas</h2>
                     <ul>
                         {loadedUrls.map((url, index) => (
@@ -92,7 +163,7 @@ const UserPage: React.FC = () => {
                                 ) : (
                                     <>
                                         <span>{chat.name}</span>
-                                        <div className="action-buttons">
+                                        <div className="action-buttons-up">
                                             <button className="edit-btn" onClick={() => handleEditChat(chat.id, chat.name)}>
                                                 <img src="/images/Vector.svg" alt="Renomear" />
                                             </button>

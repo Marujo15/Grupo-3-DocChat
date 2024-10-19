@@ -79,3 +79,12 @@ body {
   justify-content: center;
   width: 100%;
 }
+
+input {
+  height: 35px;
+}
+
+input:focus,
+button:focus {
+  outline: none;
+}
