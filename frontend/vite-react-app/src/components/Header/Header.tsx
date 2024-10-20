@@ -7,17 +7,37 @@ import docChatIcon from "../../assets/svg/Chat_Add.svg";
 
 const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
     const navigate = useNavigate();
-    const { username, setUsername } = useAuth();
+    const { user, logout } = useAuth();
 
     const isAuthenticated = () => {
-        return !!username;
+        return !!user;
     };
 
     const handleLogout = () => {
-        setUsername("");
-        localStorage.removeItem("username");
+        logout();
         navigate("/login");
     };
+
+    const handleNewChat = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/chat/create`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Request error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            navigate(`/chat/${data.id}`);
+        } catch (error) {
+            console.error("Error deleting chat:", error);
+        }
+    }
 
     return (
         <header className={`header ${variant}`}>
@@ -25,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
                 {variant === "default" && (
                     <>
                         <div id="main-page-div-btns">
-                            <button id="new-chat-btn" onClick={() => navigate("/new-conversation")}>
+                            <button id="new-chat-btn" onClick={() => handleNewChat()}>
                                 <img src={docChatIcon} alt="DocChat Icon" className="docChatIcon" />
                                 <span id="new-chat-span">Nova Conversa</span>
                             </button>
@@ -36,8 +56,8 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
                                     </button>
                                 ) : (
                                     <>
-                                        <button onClick={() => navigate("/login")}>Entrar</button>
-                                        <button onClick={() => navigate("/register")}>Cadastrar</button>
+                                        <button id="login-btn" onClick={() => navigate("/login")}>Entrar</button>
+                                        <button id="register-btn" onClick={() => navigate("/register")}>Cadastrar</button>
                                     </>
                                 )}
                             </div>

@@ -8,11 +8,7 @@ const ChatArea: React.FC = () => {
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [urls, setUrls] = useState([
-        "https://example.com/1",
-        "https://example.com/2",
-        "https://example.com/3",
-    ]);
+    const [urls, setUrls] = useState([]);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -51,20 +47,22 @@ const ChatArea: React.FC = () => {
 
     return (
         <div className="chat-area">
-            <div className="dropdown-container">
-                <button className="dropdown-button" onClick={toggleDropdown}>
-                    {isDropdownOpen ? "Esconder URLs carregadas" : "Mostrar URLs carregdas"}
-                </button>
-                {isDropdownOpen && (
-                    <ul className="dropdown-list">
-                        {urls.map((url, index) => (
-                            <li key={index} className="dropdown-item">
-                                {url}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+            {urls.length > 0 && (
+                <div className="dropdown-container">
+                    <button className="dropdown-button" onClick={toggleDropdown}>
+                        {isDropdownOpen ? "Esconder URLs carregadas" : "Mostrar URLs carregdas"}
+                    </button>
+                    {isDropdownOpen && (
+                        <ul className="dropdown-list">
+                            {urls.map((url, index) => (
+                                <li key={index} className="dropdown-item">
+                                    {url}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            )}
             {/* Chat area */}
             { messages.length === 0 ? (
                 <></>

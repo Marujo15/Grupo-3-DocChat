@@ -13,9 +13,8 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    justify-content: space-between;
+    justify-content: flex-start;
     overflow-x: hidden;
     scroll-behavior: smooth;
     width: 100%;
 }
-  
