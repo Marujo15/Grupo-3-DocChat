@@ -1,6 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ChatProvider } from "./context/ChatContext";
 import Header from "./components/Header/Header";
 import Carousel from "./components/Carousel/Carousel";
 import ChatArea from "./components/ChatArea/ChatArea";
@@ -19,24 +20,31 @@ const MainPage: React.FC = () => {
     );
 };
 
+const UserProfilePage: React.FC = () => {
+    const { user } = useAuth();
+    return (
+        <>
+            <Header variant="default" />
+            <UserPage userId={user ? user.id : ""} />
+        </>
+    );
+};
+
 const App: React.FC = () => {
     return (
         <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/user" element={<UserPage />} />
-                    <Route
-                        path="/"
-                        element={<MainPage />}
-                    />
-                    <Route
-                        path="/chat/:chatId"
-                        element={<MainPage />}
-                    />
-                </Routes>
-            </Router>
+            <ChatProvider>
+                <Router>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/user" element={<UserProfilePage />} />
+                        <Route path="/" element={<MainPage />} />
+                        <Route path="/chat/:chatId" element={<MainPage />} />
+                        <Route path="/chat/" element={<MainPage />} />
+                    </Routes>
+                </Router>
+            </ChatProvider>
         </AuthProvider>
     );
 };

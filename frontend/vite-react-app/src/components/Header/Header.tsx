@@ -1,13 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useChat } from "../../context/ChatContext.tsx";
 import "./Header.css";
 import { HeaderProps } from "../../interfaces/HeaderInterfaces.ts";
 import docChatIcon from "../../assets/svg/Chat_Add.svg";
+import { createNewChat } from "../../utils/chatApi.ts";
 
 const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+    const { addChat } = useChat();
 
     const isAuthenticated = () => {
         return !!user;
@@ -20,22 +23,11 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
 
     const handleNewChat = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/chat/create`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Request error: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            navigate(`/chat/${data.id}`);
+            const newChat = await createNewChat();
+            addChat(newChat);
+            navigate(`/chat/${newChat.id}`);
         } catch (error) {
-            console.error("Error deleting chat:", error);
+            console.error("Error creating new chat:", error);
         }
     }
 

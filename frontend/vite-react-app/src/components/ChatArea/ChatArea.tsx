@@ -47,52 +47,54 @@ const ChatArea: React.FC = () => {
 
     return (
         <div className="chat-area">
-            {urls.length > 0 && (
                 <div className="dropdown-container">
                     <button className="dropdown-button" onClick={toggleDropdown}>
                         {isDropdownOpen ? "Esconder URLs carregadas" : "Mostrar URLs carregdas"}
                     </button>
                     {isDropdownOpen && (
-                        <ul className="dropdown-list">
-                            {urls.map((url, index) => (
-                                <li key={index} className="dropdown-item">
-                                    {url}
-                                </li>
-                            ))}
-                        </ul>
+                        urls.length > 0 ? (
+                            <ul className="dropdown-list">
+                                {urls.map((url, index) => (
+                                    <li key={index} className="dropdown-item">
+                                        {url}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>Nenhuma URL carregada! Para carregar url's vá para a Área do usuário.</p>
+                        )
                     )}
                 </div>
-            )}
-            {/* Chat area */}
-            { messages.length === 0 ? (
-                <></>
-            ) : (
-                <div className="chat-messages">
-                    {messages.map((msg, index) => (
-                        <div key={index} className={`message ${msg.sender}`}>
-                            <div className={`bubble ${msg.sender}`}>
-                                <p>{msg.text}</p>
+                {/* Chat area */}
+                {/* { messages.length === 0 ? ( */}
+                    {/* <></> */}
+                {/* ) : ( */}
+                    <div className="chat-messages">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`message ${msg.sender}`}>
+                                <div className={`bubble ${msg.sender}`}>
+                                    <p>{msg.text}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                {/* Form to send questions */}
+                <form onSubmit={handleAskQuestion} className="input-button-container">
+                    <div className="input-with-button">
+                        <Input
+                            value={question}
+                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setQuestion(e.target.value)}
+                            placeholder="Como posso ajudar?"
+                            className="user-input"
+                            id="ask-input"
+                        />
+                        <Button type="submit" id="ask-button" className="ask-button" onClick={() => {}}>
+                            Perguntar
+                        </Button>
+                    </div>
+                </form>
+                    </div>
+                {/* )} */}
 
-            {/* Form to send questions */}
-            <form onSubmit={handleAskQuestion} className="input-button-container">
-                <div className="input-with-button">
-                    <Input
-                        value={question}
-                        onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setQuestion(e.target.value)}
-                        placeholder="Como posso ajudar?"
-                        className="user-input"
-                        id="ask-input"
-                    />
-                    <Button type="submit" id="ask-button" className="ask-button" onClick={() => {}}>
-                        Perguntar
-                    </Button>
-                </div>
-            </form>
         </div>
     );
 };
