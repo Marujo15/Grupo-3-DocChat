@@ -10,3 +10,9 @@ export interface Chat {
     id: string;
     name: string;
 }
+
+export interface ChatCard {
+    id: string;
+    title: string;
+    created_at: string;
+}

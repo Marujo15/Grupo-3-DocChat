@@ -10,18 +10,18 @@ const Login: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
-    const { setUsername } = useAuth();
+    const { setUser } = useAuth();
 
     const handleLogin = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
             const response = await fetch("http://localhost:3000/api/auth/login", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email, password }),
-                credentials: "include",
             });
 
             if (!response.ok) {
@@ -29,17 +29,9 @@ const Login: React.FC = () => {
             }
 
             const data = await response.json();
-
-            if (data.auth) {
-                setUsername(data.username);
-                localStorage.setItem("username", data.username);
-                navigate("/");
-            } else {
-                setError("Email ou senha inválidos");
-                setTimeout(() => {
-                    setError("");
-                }, 3000);
-            }
+            setUser({ id: data.userId, username: data.username });
+            localStorage.setItem("token", data.token);
+            navigate("/");
         } catch (error) {
             setError("Erro ao fazer login. Tente novamente.");
             setTimeout(() => {
