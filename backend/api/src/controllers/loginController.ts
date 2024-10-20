@@ -20,7 +20,7 @@ export const loginController = {
         return;
       }
 
-      const { auth, token } = await loginServices.authenticateUser(
+      const { auth, token, id } = await loginServices.authenticateUser(
         email,
         password
       );
@@ -38,6 +38,8 @@ export const loginController = {
         .status(200)
         .json({
           auth,
+          token,
+          id,
           message: "User successfully authenticated!",
           username: user[0].username,
         });
