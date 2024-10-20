@@ -7,6 +7,6 @@ router.get("/me", userCotroller.getUserMe);
 router.get("/:userId", userCotroller.getUserById);
 // router.delete("/:userId", adminOnly, deleteUser);
 // router.patch("/:userId", updateUser);
-// router.get("/", adminOnly, getAllUsers);
+router.get("/", userCotroller.getAllUsers);
 
 export default router;

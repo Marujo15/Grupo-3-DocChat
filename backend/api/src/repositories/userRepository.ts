@@ -2,42 +2,32 @@ import { pool } from "../database/database";
 import { ErrorApi } from "../errors/ErrorApi";
 import { IUser } from "../interfaces/user";
 
-// export const getAllUsers = async (): Promise<IUser[]> => {
-//   try {
-//     const { rows } = await pool.query(`
-//         SELECT
-//           id,
-//           username,
-//           email,
-//           is_admin AS "isAdmin",
-//         FROM users
-//       `);
-//     return rows;
-//   } catch (error: any) {
-//     console.log(error);
+export const getAllUsers = async (): Promise<IUser[]> => {
+  try {
+    const { rows } = await pool.query(`SELECT * FROM users`);
+    return rows;
+  } catch (error: any) {
 
-//     throw new ErrorApi({
-//       message: "Error updating users",
-//       status: 500,
-//     });
-//   }
-// };
+    throw new ErrorApi({
+      message: "Error updating users",
+      status: 500,
+    });
+  }
+};
 
 export const createUser = async (
-  id: string,
   username: string,
   email: string,
   password: string,
-  createdAt: string
 ) => {
 
   const query =
-    `INSERT INTO users (id, username, email, password, created_at) 
-    VALUES ($1, $2, $3, $4, $5) 
+    `INSERT INTO users (username, email, password, created_at) 
+    VALUES ($1, $2, $3, NOW()) 
     RETURNING username, email`;
 
   try {
-    const result = await pool.query(query, [id, username, email, password, createdAt]);
+    const result = await pool.query(query, [username, email, password]);
 
     return result.rows[0];
   } catch (error) {
