@@ -1,12 +1,15 @@
 .user-page {
     align-items: center;
+    background-color: rgba(0,0,0,0.4);
+    /* border: 1px solid #4f4f4f; */
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
     justify-content: center;
     min-width: 720px;
-    padding: 1rem;
-    width: 80vw;
+    padding: 0 1rem 1rem 1rem;
+    width: 70vw;
 }
 
 .user-page section {
@@ -14,8 +17,14 @@
     border-radius: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    max-height: 35vh;
     padding: 0 1rem 1rem 1rem;
+    width: 100%;
+}
+
+.input-with-button {
+    width: 100%;
 }
 
 .user-button {
@@ -27,7 +36,7 @@
     border-radius: 20px;
     font-size: 1rem;
     padding: 0.5rem 2rem;
-    width: 60vw;
+    width: 90%;
 }
 
 .user-page section ul {
@@ -36,8 +45,16 @@
     flex-direction: column;
     justify-content: space-between;
     font-size: 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 0 2rem;
-    width: 60vw;
+    width: 90%;
+}
+
+.user-page section h2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .loaded-url-item, .saved-chat-item {
@@ -48,6 +65,7 @@
     font-size: 1rem;
     height: 40px;
     justify-content: space-between;
+    min-height: 40px;
     padding: 0 10px;
     width: 100%;
 }
@@ -68,12 +86,22 @@
     background-color: transparent;
 }
 
-.chat-name-input {
+.save-btn {
     height: 20px;
+    width: 20px;
+}
+
+.chat-name-input {
+    background-color: rgba(#4f4f4f,0.5);
+    height: 20px;
+    padding-right: 10px;
 }
 
 .input-button-container {
-    padding: 2rem 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 1rem 0;
     width: 100%;
 }
 
@@ -83,4 +111,34 @@
     flex-direction: row;
     gap: 18px;
     justify-content: center;
+}
+
+.chat-info-div {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+#sections-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.update-confirmation, .delete-confirmation {
+    align-items: center;
+    background-color: #10A37F;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0 2rem;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    white-space: nowrap;
+    width: auto;
 }

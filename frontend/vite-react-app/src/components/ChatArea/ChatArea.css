@@ -141,8 +141,13 @@
 }
 
 .dropdown-container {
+    align-items: center;
     border: 1px solid #4f4f4f;
     border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 2rem 0;
     width: 100%;
 }
 
