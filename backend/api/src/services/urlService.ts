@@ -82,4 +82,43 @@ export const urlServices = {
       throw error;
     }
   },
+
+  deleteUrl: async (userId: string, baseUrl: string) => {
+    try {
+      await urlRepository.removeUrlsByBaseUrl(userId, baseUrl);
+      return "Urls and vectors deleted";
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  searchPagesByQuestion: async (
+    question: string,
+    userId: string,
+    chatId: string,
+    matchThreshold: number = 0,
+    matchCount: number = 5
+  ): Promise<string[]> => {
+    try {
+      const questionEmbedding = await vectorServices.vectorizeString(question);
+      const documentationPages = await urlRepository.getPagesByEmbedding(
+        questionEmbedding,
+        userId,
+        chatId,
+        matchThreshold,
+        matchCount
+      );
+
+      if (!documentationPages) {
+        throw new ErrorApi({
+          message: "No pages found matching the question.",
+          status: 404,
+        });
+      }
+
+      return documentationPages;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

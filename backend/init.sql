@@ -50,6 +50,42 @@ CREATE TABLE chats_urls (
     PRIMARY KEY (chat_id, base_url)
 );
 
+CREATE OR REPLACE FUNCTION match_chunks(
+  query_embedding vector(1536),
+  user_id VARCHAR(50),
+  chat_id VARCHAR(50)
+  match_threshold float,
+  match_count int,
+)
+RETURNS TABLE (
+  url_id VARCHAR(50),
+  content TEXT,
+  similarity float
+)
+LANGUAGE sql STABLE
+AS $$
+  WITH base_url_cte AS ( -- base_url
+    SELECT base_url
+    FROM chats_urls
+    WHERE chat_id = chat_id
+  ),
+  filtered_urls AS ( -- url_id
+    SELECT urls.id AS url_id, urls.content AS page_content
+    FROM urls
+    JOIN base_url_cte ON urls.base_url = base_url_cte.base_url
+    JOIN users_urls ON urls.id = users_urls.url_id
+    WHERE users_urls.user_id = user_id
+  )
+  SELECT DISTINCT ON (vectors.url_id)
+    vectors.url_id,
+    filtered_urls.page_content,
+    1 - (vectors.vector <=> query_embedding) AS similarity
+  FROM vectors
+  JOIN filtered_urls ON vectors.url_id = filtered_urls.url_id
+    AND (vectors.vector <=> query_embedding) < 1 - match_threshold
+  ORDER BY vectors.url_id, similarity DESC
+  LIMIT match_count;
+$$;
 -- CREATE OR REPLACE FUNCTION cosine_distance(vec1 double precision[], vec2 double precision[])
 -- RETURNS double precision AS $$
 -- DECLARE

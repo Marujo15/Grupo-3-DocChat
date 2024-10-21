@@ -120,7 +120,7 @@ export const urlRepository = {
   },
 
   removeUrlsByBaseUrl: async (
-    userId: number,
+    userId: string,
     baseUrl: string
   ): Promise<string[]> => {
     // Query para buscar todos os IDs das URLs relacionadas ao userId e baseUrl
@@ -186,6 +186,38 @@ export const urlRepository = {
     } catch (error) {
       console.error("Erro ao desvincular URLs:", error);
       throw new Error("Não foi possível desvincular os URLs");
+    }
+  },
+
+  getPagesByEmbedding: async (
+    embedding: number[],
+    userId: string,
+    chatId: string,
+    matchThreshold: number,
+    matchCount: number,
+  ): Promise<string[]> => {
+    try {
+      // Query que chama a função SQL match_chunks
+      const query = `
+            SELECT * 
+            FROM match_chunks($1, $2, $3, $4, $5);
+        `;
+
+      // Definindo os parâmetros
+      const values = [
+        JSON.stringify(embedding),
+        userId,
+        chatId,
+        matchThreshold,
+        matchCount,
+      ];
+
+      // Executando a query
+      const { rows } = await pool.query(query, values);
+
+      return rows;
+    } catch (error: any) {
+      throw error;
     }
   },
 };
