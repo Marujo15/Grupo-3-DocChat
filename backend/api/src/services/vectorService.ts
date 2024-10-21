@@ -3,7 +3,6 @@ import { OPENAI_API_KEY } from "../config";
 
 const embeddings = new OpenAIEmbeddings({
   apiKey: OPENAI_API_KEY,
-  model: "text-embedding-3-small",
 });
 
 export const vectorServices = {

@@ -10,7 +10,6 @@ export const urlServices = {
   saveUrl: async (userId: string, url: string) => {
     try {
       const usersUrls: string[] = await urlRepository.getUrlsByUserId(userId);
-
       // verifica se a url q ele passou esta dentro de usersUrls
       const alreadyHasUrl = usersUrls.includes(url);
 
@@ -22,16 +21,11 @@ export const urlServices = {
         });
       }
 
-      // se nao tiver entao salve a url no repository
-      console.log("aqui 1");
-
       const visited: Set<string> = new Set<string>();
       const scrapeResults: PageInfo[] = await scrapeRepository.processPage(
         url,
         visited
       );
-
-      console.log("aqui 2");
 
       const urlsToSave: IUrl[] = scrapeResults.map((pageInfo) => ({
         id: uuid(),
@@ -39,23 +33,15 @@ export const urlServices = {
         url: pageInfo.url,
         content: pageInfo.html, // Conteúdo HTML da página
       }));
-      console.log("aqui 3");
 
       const vectorsToSave: IVector[] = await Promise.all(
         urlsToSave.flatMap((URL) => {
-          console.log(`URL to create chunks: ${URL.url}`);
 
-          // Dividindo o conteúdo da URL em chunks (processo síncrono)
           const chunks = vectorServices.splitIntoChunks(URL.content);
-          console.log(
-            `The URL: ${URL.url} has ${chunks.length} chunks to save`
-          );
 
-          // Para cada chunk, vetorizamos e retornamos as promessas de vetorização
           return chunks.map(async (chunk) => {
             const vector = await vectorServices.vectorizeString(chunk); // Assíncrono
 
-            // Retorna a estrutura para salvar o vetor
             return {
               id: uuid(),
               urlId: URL.id,
@@ -66,16 +52,12 @@ export const urlServices = {
           });
         })
       );
-      console.log("aqui 4");
 
       const urlsIds = await urlRepository.saveUrls(urlsToSave);
-      console.log("aqui 5");
 
       await urlRepository.saveVectors(vectorsToSave);
-      console.log("aqui 6");
 
       await urlRepository.syncIdsOnUsersUrls(userId, urlsIds);
-      console.log("aqui 7");
 
       return "Urls saved";
     } catch (error) {

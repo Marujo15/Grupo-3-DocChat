@@ -52,9 +52,9 @@ export const urlRepository = {
       const result = await pool.query(query, values);
       return result.rows.map((row) => row.id);
     } catch (error) {
-      console.error("Error saving URLs:", error);
+      console.error('Error saving URLs:', error);
       throw new ErrorApi({
-        message: "Failed to save user URLs.",
+        message: 'Failed to save user URLs.',
         status: 500,
       });
     }
@@ -106,19 +106,25 @@ export const urlRepository = {
       VALUES ${urlIds.map((_, index) => `($1, $${index + 2})`).join(", ")}
     `;
 
-    const usersUrlsValues = [userId, ...urlIds];
+    const values = [
+      vector.id,
+      vector.urlId,
+      vector.baseUrl,
+      vector.content,
+      vector.vector,
+    ];
 
     try {
-      await pool.query(usersUrlsQuery, usersUrlsValues);
+      await pool.query(query, values);
     } catch (error) {
-      console.error("Error syncing IDs on users_urls:", error);
+      console.error('Error saving vector:', error);
       throw new ErrorApi({
-        message: "Failed to sync user URLs.",
+        message: 'Failed to save vector.',
         status: 500,
       });
     }
   },
-
+    
   removeUrlsByBaseUrl: async (
     userId: string,
     baseUrl: string
@@ -166,26 +172,27 @@ export const urlRepository = {
       throw new Error("Não foi possível remover e buscar as URLs");
     }
   },
+    
+  syncIdsOnUsersUrls: async (userId: string, urlIds: string[]): Promise<void> => {
+    if (urlIds.length === 0) return;
 
-  desyncIdsOnUsersUrls: async (
-    userId: string,
-    urlIds: string[]
-  ): Promise<string> => {
-    // Query para deletar a associação entre userId e os urlIds fornecidos
-    const deleteQuery = `
-        DELETE FROM users_urls
-        WHERE user_id = $1 AND url_id = ANY($2);
+    const valuesPlaceholders = urlIds.map((_, index) => `($1, $${index + 2})`).join(', ');
+
+    const usersUrlsQuery = `
+      INSERT INTO users_urls (user_id, url_id)
+      VALUES ${valuesPlaceholders};
     `;
 
-    try {
-      // Executa a query de deletar
-      await pool.query(deleteQuery, [userId, urlIds]);
+    const usersUrlsValues = [userId, ...urlIds];
 
-      // Retorna uma mensagem de sucesso
-      return `Desvinculados com sucesso os URLs: ${urlIds.join(", ")}`;
+    try {
+      await pool.query(usersUrlsQuery, usersUrlsValues);
     } catch (error) {
-      console.error("Erro ao desvincular URLs:", error);
-      throw new Error("Não foi possível desvincular os URLs");
+      console.error('Error syncing IDs on users_urls:', error);
+      throw new ErrorApi({
+        message: 'Failed to sync user URLs.',
+        status: 500,
+      });
     }
   },
 

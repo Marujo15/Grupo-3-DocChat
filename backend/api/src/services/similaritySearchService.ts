@@ -1,7 +1,7 @@
 import { query } from "../database/database";
 
 export const similaritySearchService = {
-  searchSimilarDocuments: async (embeddedQuestion: number[]) => {
+  searchSimilarDocuments: async (embeddedQuestion: number[], userId: string) => {
     try {
       const queryText = `
         SELECT content, vector <=> $1 AS difference

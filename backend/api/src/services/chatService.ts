@@ -1,75 +1,109 @@
-import { Response } from "express";
-import dotenv from "dotenv";
-import { chatRepository } from "../repositories/chatRepository";
-import { IMessage } from "../interfaces/message";
-import { CallbackManager } from "@langchain/core/callbacks/manager";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { ChatOpenAI } from "@langchain/openai";
-import { OPENAI_API_KEY, SYSTEM_PROMPT } from "../config";
+import { Response } from 'express';
+import dotenv from 'dotenv';
+import { v4 as uuid } from 'uuid';
+import { OpenAI } from 'langchain/llms/openai';
+import { chatRepository } from '../repositories/chatRepository';
+import { IMessage } from '../interfaces/message';
+import { createSearchDocumentationTool } from '../utils/tools';
+import { SYSTEM_PROMPT } from '../config';
+import { urlServices } from '../services/urlService';
 
 dotenv.config();
 
-const systemPrompt = SYSTEM_PROMPT;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
 
 export const chatServices = {
-  handleChatRequest: async (message: string, res: Response) => {
-    const callbackManager = CallbackManager.fromHandlers({
-      async handleLLMNewToken(token: string) {
-        res.write(`data: ${token}\n\n`);
-      },
+  handleChatRequest: async (
+    message: string,
+    res: Response,
+    chatId: string,
+    userId: string,
+    urls?: string[]
+  ) => {
+    // Salvar a mensagem do usuário
+    const userMessage: IMessage = {
+      id: uuid(),
+      sender: 'user',
+      content: message,
+      createdAt: new Date().toISOString(),
+      chatId,
+    };
+    await chatRepository.saveMessage(userMessage);
 
-      async handleLLMEnd() {
-        res.write("data: [END]\n\n");
-        res.end();
-      },
+    // Recuperar mensagens anteriores
+    const pastMessages = await chatRepository.getMessagesByChatId(chatId);
 
-      async handleLLMError(e: Error) {
-        console.error(e);
-        res.write("data: [ERROR]\n\n");
-        res.end();
-      },
-    });
+    // Salvar URLs se fornecidas
+    if (urls && urls.length > 0) {
+      for (const url of urls) {
+        await urlServices.saveUrl(userId, url);
+      }
+    }
 
-    const chat = new ChatOpenAI({
+    // Inicializar o modelo de linguagem
+    const llm = new OpenAI({
       openAIApiKey: OPENAI_API_KEY,
-      streaming: true,
-      callbackManager,
-      modelName: "gpt-4",
+      modelName: 'gpt-4',
     });
 
-    await chat.invoke([
-      new SystemMessage(
-        systemPrompt ||
-          "Você é um assistente útil que responde às perguntas dos usuários de forma clara e concisa."
-      ), // Usando o prompt do .env ou um fallback opcional
-      new HumanMessage(message),
-    ]);
+    // Criar a ferramenta personalizada
+    const searchTool = createSearchDocumentationTool(userId);
+
+    let toolResponse = '';
+    let shouldUseTool = false;
+
+    // Lógica simples para decidir se deve usar a ferramenta
+    // Por exemplo, se a mensagem contém a palavra "documentação"
+    if (message.toLowerCase().includes('documentação')) {
+      shouldUseTool = true;
+      toolResponse = await searchTool.func(message);
+    }
+
+    // Construir o prompt para o LLM
+    let prompt = `${SYSTEM_PROMPT}\n`;
+
+    // Adicionar histórico de mensagens
+    for (const msg of pastMessages) {
+      prompt += `${msg.sender === 'user' ? 'Human' : 'AI'}: ${msg.content}\n`;
+    }
+
+    // Adicionar a nova mensagem do usuário
+    prompt += `Human: ${message}\n`;
+
+    // Se a ferramenta foi usada, incluir a resposta dela no prompt
+    if (shouldUseTool) {
+      prompt += `AI (usando a ferramenta ${searchTool.name}): ${toolResponse}\n`;
+    }
+
+    // Adicionar a instrução para o LLM gerar a resposta
+    prompt += `AI:`;
+
+    // Chamar o modelo de linguagem para gerar a resposta
+    const aiMessageContent = await llm.call(prompt);
+
+    // Salvar a mensagem da IA
+    const aiMessage: IMessage = {
+      id: uuid(),
+      sender: 'ia',
+      content: aiMessageContent,
+      createdAt: new Date().toISOString(),
+      chatId,
+    };
+    await chatRepository.saveMessage(aiMessage);
+
+    // Enviar a resposta ao usuário
+    res.json({ message: aiMessageContent });
   },
 
-  createChat: async (userId: string) => {
-    const title = "teste";
-    const chat = await chatRepository.createChat(userId, title);
-    return chat;
-  },
-
-  getAllChatsByUserId: async (userId: string) => {
-    const result = await chatRepository.getAllChatsByUserId(userId);
-    return result;
+  createChat: async (title: string, userId: string) => {
+    const id = uuid();
+    const createdAt = new Date().toISOString();
+    const result = await chatRepository.createChat(id, userId, title, createdAt);
+    return { message: 'Chat created', data: result };
   },
 
   getChatById: async (chatId: string): Promise<IMessage[]> => {
-    const result: IMessage[] = await chatRepository.getChatById(chatId);
-
-    return [];
-  },
-
-  updateChatTitle: async (chatId: string, title: string) => {
-    const result = await chatRepository.updateChatTitle(chatId, title);
+    const result: IMessage[] = await chatRepository.getMessagesByChatId(chatId);
     return result;
   },
-
-  deleteChat: async (chatId: string) => {
-    const result = await chatRepository.deleteChat(chatId);
-    return result;
-  }
 };
