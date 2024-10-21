@@ -27,7 +27,7 @@ CREATE TABLE urls (
     id VARCHAR(50) PRIMARY KEY,
     base_url VARCHAR(100) NOT NULL,
     url VARCHAR(100) NOT NULL, 
-    content TEXT NOT NULL, --conteudo da pagina toda da url
+    content TEXT NOT NULL --conteudo da pagina toda da url
 );
 
 CREATE TABLE vectors (
@@ -53,14 +53,14 @@ CREATE TABLE chats_urls (
 CREATE OR REPLACE FUNCTION match_chunks(
   query_embedding vector(1536),
   user_id VARCHAR(50),
-  chat_id VARCHAR(50)
-  match_threshold float,
-  match_count int,
+  chat_id VARCHAR(50),
+  match_threshold FLOAT,
+  match_count INT
 )
 RETURNS TABLE (
   url_id VARCHAR(50),
   content TEXT,
-  similarity float
+  similarity FLOAT
 )
 LANGUAGE sql STABLE
 AS $$

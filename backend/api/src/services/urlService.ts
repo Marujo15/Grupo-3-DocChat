@@ -121,4 +121,38 @@ export const urlServices = {
       throw error;
     }
   },
+
+  getUrlsByUserId: async (userId: string): Promise<string[]> => {
+    try {
+      const pages: string[] = await urlRepository.getUrlsByUserId(userId);
+
+      if (!pages) {
+        throw new ErrorApi({
+          message: "Page not found.",
+          status: 404,
+        });
+      }
+
+      return pages;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getUrlsByChatId: async (chatId: string) => {
+    try {
+      const urls: string[] = await urlRepository.getUrlsByChatId(chatId);
+
+      if (!urls) {
+        throw new ErrorApi({
+          message: "Page not found.",
+          status: 404,
+        });
+      }
+
+      return urls;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

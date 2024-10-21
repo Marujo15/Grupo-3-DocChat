@@ -194,7 +194,7 @@ export const urlRepository = {
     userId: string,
     chatId: string,
     matchThreshold: number,
-    matchCount: number,
+    matchCount: number
   ): Promise<string[]> => {
     try {
       // Query que chama a função SQL match_chunks
@@ -216,6 +216,30 @@ export const urlRepository = {
       const { rows } = await pool.query(query, values);
 
       return rows;
+    } catch (error: any) {
+      throw error;
+    }
+  },
+
+  getUrlsByChatId: async (chatId: string): Promise<string[]> => {
+    try {
+      const query = `
+        SELECT base_url 
+        FROM chats_urls 
+        WHERE chat_id = $1
+      `;
+
+      // Executando a query
+      const { rows } = await pool.query(query, [chatId]);
+
+      if (rows.length === 0) {
+        throw new ErrorApi({
+          message: "Nenhuma URL encontrada para este chat.",
+          status: 404,
+        });
+      }
+
+      return rows.map((row: { base_url: string }) => row.base_url);
     } catch (error: any) {
       throw error;
     }
