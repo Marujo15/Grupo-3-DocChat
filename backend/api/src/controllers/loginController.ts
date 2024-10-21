@@ -15,7 +15,7 @@ export const loginController = {
     try {
       const user: IUser = await loginServices.getUser(email);
 
-      const { auth, token } = await loginServices.authenticateUser(
+      const { auth, token, id } = await loginServices.authenticateUser(
         email,
         password
       );
@@ -33,6 +33,8 @@ export const loginController = {
         .status(200)
         .json({
           auth,
+          token,
+          id,
           message: "User successfully authenticated!",
           user: { 
             id: user.id, 

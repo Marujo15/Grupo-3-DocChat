@@ -1,52 +1,55 @@
-create extension vector;
+CREATE EXTENSION IF NOT EXISTS vector;
 
-CREATE TABLE users (
-    id VARCHAR(50) PRIMARY KEY,
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE chats (
-    id VARCHAR(50) PRIMARY KEY,
-    user_id VARCHAR(50) REFERENCES users(id),
-    title VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP NOT NULL
+CREATE TABLE IF NOT EXISTS chats (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE messages (
-    id VARCHAR(50) PRIMARY KEY,
-    chat_id VARCHAR(50) REFERENCES chats(id),
+CREATE TABLE IF NOT EXISTS messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    chat_id UUID REFERENCES chats(id),
     sender VARCHAR(15) CHECK (sender IN ('user', 'ia', 'system', 'toolCall', 'toolMessage')) NOT NULL, 
     content TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE urls (
-    id VARCHAR(50) PRIMARY KEY,
-    base_url VARCHAR(100) NOT NULL,
-    url VARCHAR(100) NOT NULL, 
+CREATE TABLE IF NOT EXISTS urls (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    base_url VARCHAR(250) NOT NULL,
+    url VARCHAR(250) NOT NULL, 
     content TEXT NOT NULL --conteudo da pagina toda da url
 );
 
-CREATE TABLE vectors (
-    id VARCHAR(50) PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS vectors (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     url_id VARCHAR(50) REFERENCES urls(id),
-    base_url VARCHAR(100) NOT NULL,
-    content TEXT NOT NULL, -- string do chunk
-    vector vector(1536) NOT NULL -- embed do chunk
+    base_url VARCHAR(250) NOT NULL,
+    content TEXT NOT NULL,
+    vector vector(1536) NOT NULL
 );
 
-CREATE TABLE users_urls (
+CREATE TABLE IF NOT EXISTS users_urls (
     user_id VARCHAR(50) REFERENCES users(id),
     url_id VARCHAR(50) REFERENCES urls(id),
     PRIMARY KEY (user_id, url_id)
 );
 
-CREATE TABLE chats_urls (
+CREATE TABLE IF NOT EXISTS chats_urls (
     chat_id VARCHAR(50) REFERENCES chats(id),
-    base_url VARCHAR(50) NOT NULL,
+    base_url VARCHAR(250) REFERENCES NOT NULL,
     PRIMARY KEY (chat_id, base_url)
 );
 

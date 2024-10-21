@@ -7,7 +7,7 @@ import {
 import { hashPassword } from "../utils/hashPassword";
 import { ErrorApi } from "../errors/ErrorApi";
 import { IValidate } from "../interfaces/validate";
-import { v4 as uuidv4 } from "uuid";
+import { IUser } from "../interfaces/user";
 
 export const createUser = async (
   username: string,
@@ -39,16 +39,13 @@ export const createUser = async (
       });
     }
 
-    const id: string = uuidv4();
     const timestamp: number = Date.now();
     const createdAt: string = new Date(timestamp).toISOString();
 
     const user = await userRepository.createUser(
-      id,
       username,
       email,
       hashedPassword,
-      createdAt
     );
     return user;
   } catch (error) {
@@ -65,14 +62,14 @@ export const getUserById = async (id: string) => {
   }
 };
 
-// export const getAllUsers = async (): Promise<IUser[]> => {
-//   try {
-//     const users = await userRepository.getAllUsers();
-//     return users;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+export const getAllUsers = async (): Promise<IUser[]> => {
+  try {
+    const users = await userRepository.getAllUsers();
+    return users;
+  } catch (error) {
+    throw error;
+  }
+};
 
 // export const deleteUser = async (id: string): Promise<IUser> => {
 //   try {

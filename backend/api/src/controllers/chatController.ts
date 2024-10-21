@@ -27,27 +27,40 @@ export const chatController = {
   },
 
   createChat: async (req: Request, res: Response) => {
-    const response: IAPIResponse<string> = { success: false };
-    const { title } = req.body;
-    const userId = req.user;
-
-    if (!title) {
-      res.status(400).send("The title is required");
-      return;
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: "User not authenticated" });
+        return;
+      }
+      const userId = req.user;
+      console.log({userId})
+      const chat = await chatServices.createChat(userId);
+      res.status(201).json(chat);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Unknown error" });
+      }
     }
+  },
 
-    if (!userId) {
-      res.status(401).send("The userId is required");
-      return;
+  getAllChatsByUserId: async (req: Request, res: Response) => {
+    try {
+      if (!req.user) {
+        res.status(401).json({ error: "User not authenticated" });
+        return;
+      }
+      const userId = req.user;
+      const chats = await chatServices.getAllChatsByUserId(userId);
+      res.status(200).json(chats);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: "Unknown error" });
+      }
     }
-
-    const result = await chatServices.createChat(title, userId);
-
-    response.success = true;
-    response.message = result.message;
-    response.data = result.data;
-
-    res.json(response);
   },
 
   getChatById: async (req: Request, res: Response) => {
@@ -78,4 +91,57 @@ export const chatController = {
   },
 
   getAllChats: async (req: Request, res: Response) => {},
+
+  updateChatTitle: async (req: Request, res: Response) => {
+    try {
+      const chatId = req.params.chatId;
+      const title = req.body.title;
+      const response: IAPIResponse<IMessage[]> = {success: false};
+
+      if (!chatId || !title) {
+        res.status(400).send("The chatId and title are required");
+        return;
+      }
+      const result = await chatServices.updateChatTitle(chatId, title);
+
+      response.success = true; 
+      response.data = result; 
+      response.message = "Chat updated";
+
+      res.status(200).json(response);
+    } catch (error) {
+      console.error("Error updating chat:", error);
+      if (error instanceof ErrorApi) {
+        res.status(error.status).send(error.message);
+        return;
+      }
+      res.status(500).send("Error updating chat");
+    }
+  },
+
+  deleteChat: async (req: Request, res: Response) => {
+    try {
+      const chatId = req.params.chatId;
+      const response: IAPIResponse<IMessage[]> = {success: false};
+
+      if (!chatId) {
+        res.status(400).send("The chatId is required");
+        return;
+      }
+
+      const result = await chatServices.deleteChat(chatId);
+
+      response.success = true; 
+      response.message = "Chat deleted";
+
+      res.status(200).json(response);
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      if (error instanceof ErrorApi) {
+        res.status(error.status).send(error.message);
+        return;
+      }
+      res.status(500).send("Error deleting chat");
+    }
+  }
 };

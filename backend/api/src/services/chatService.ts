@@ -1,7 +1,6 @@
 import { Response } from "express";
 import dotenv from "dotenv";
 import { chatRepository } from "../repositories/chatRepository";
-import { v4 as uuid } from "uuid";
 import { IMessage } from "../interfaces/message";
 import { CallbackManager } from "@langchain/core/callbacks/manager";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
@@ -47,22 +46,15 @@ export const chatServices = {
     ]);
   },
 
-  createChat: async (title: string, userId: string) => {
-    try {
-      const id = uuid();
-      const createdAt = new Date().toISOString();
+  createChat: async (userId: string) => {
+    const title = "teste";
+    const chat = await chatRepository.createChat(userId, title);
+    return chat;
+  },
 
-      const result = await chatRepository.createChat(
-        id,
-        userId,
-        title,
-        createdAt
-      );
-
-      return { message: "Chat created", data: result };
-    } catch (error) {
-      throw error;
-    }
+  getAllChatsByUserId: async (userId: string) => {
+    const result = await chatRepository.getAllChatsByUserId(userId);
+    return result;
   },
 
   getChatById: async (chatId: string): Promise<IMessage[]> => {
@@ -70,4 +62,14 @@ export const chatServices = {
 
     return [];
   },
+
+  updateChatTitle: async (chatId: string, title: string) => {
+    const result = await chatRepository.updateChatTitle(chatId, title);
+    return result;
+  },
+
+  deleteChat: async (chatId: string) => {
+    const result = await chatRepository.deleteChat(chatId);
+    return result;
+  }
 };
