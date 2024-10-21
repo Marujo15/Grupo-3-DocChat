@@ -13,12 +13,7 @@ export const loginController = {
     }
 
     try {
-      const user: IUser[] = await loginServices.getUser(email);
-
-      if (!user) {
-        res.status(400).json({ error: "User not found." });
-        return;
-      }
+      const user: IUser = await loginServices.getUser(email);
 
       const { auth, token, id } = await loginServices.authenticateUser(
         email,
@@ -41,7 +36,11 @@ export const loginController = {
           token,
           id,
           message: "User successfully authenticated!",
-          username: user[0].username,
+          user: { 
+            id: user.id, 
+            username: user.username, 
+            password: user.password
+          },
         });
       return;
     } catch (error) {
