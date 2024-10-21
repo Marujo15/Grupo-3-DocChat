@@ -1,37 +1,57 @@
-import { v4 as uuid } from "uuid";
-import { scrapeRepository } from "../repositories/scrapeRepository";
-import { urlRepository } from "../repositories/urlRepository";
-import { IUrl } from "../interfaces/url";
+import { v4 as uuid } from 'uuid';
+import { scrapeRepository } from '../repositories/scrapeRepository';
+import { urlRepository } from '../repositories/urlRepository';
+import { IUrl } from '../interfaces/url';
+import { vectorServices } from './vectorService';
 
 export const urlServices = {
   saveUrl: async (userId: string, url: string) => {
     const usersUrls: string[] = await urlRepository.getUrlsByUserId(userId);
 
-    // verifica se a url q ele passou esta dentro de usersUrls
+    // Verifica se a URL já está cadastrada para o usuário
     const alreadyHasUrl = usersUrls.includes(url);
 
-    // se tiver entao retorne dizendo que a url ja esta cadastrada
     if (alreadyHasUrl) {
-      return "url already registered";
+      return 'URL already registered';
     }
 
-    // se nao tiver entao salve a url no repository
+    // Faz o scraping da URL
     const visited = new Set<string>();
     const results = await scrapeRepository.processPage(url, visited);
 
+    // Prepara os dados para salvar
     const urlsToSave: IUrl[] = results.map((pageInfo) => ({
       id: uuid(),
       baseUrl: url,
       url: pageInfo.url,
-      content: pageInfo.html, // Conteúdo HTML da página
+      content: pageInfo.html,
     }));
 
-    const result1 = await urlRepository.saveUrls(urlsToSave);
+    const urlIds = await urlRepository.saveUrls(urlsToSave);
 
-    await urlRepository.syncIdsOnUsersUrls(userId, result1);
+    // Processa e salva os vetores
+    for (const pageInfo of results) {
+      const chunks = vectorServices.splitIntoChunks(pageInfo.html, 1000);
+      const urlId = urlsToSave.find((u) => u.url === pageInfo.url)?.id!;
+
+      const vectorPromises = chunks.map(async (chunk) => {
+        const vector = await vectorServices.vectorizeString(chunk);
+        await urlRepository.saveVector({
+          id: uuid(),
+          urlId,
+          url: pageInfo.url,
+          baseUrl: url,
+          content: chunk,
+          vector,
+        });
+      });
+
+      await Promise.all(vectorPromises);
+    }
+
+    // Sincroniza os IDs na tabela users_urls
+    await urlRepository.syncIdsOnUsersUrls(userId, urlIds);
 
     return;
-
-    // se nao tiver entao salve a url no repository
   },
 };
