@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../database/database";
+import { SECRET_KEY } from "../config";
+
+if (!SECRET_KEY) {
+  throw new Error("SECRET_KEY is not defined");
+}
 
 export const authenticateJWT = (
   req: Request,

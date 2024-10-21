@@ -1,5 +1,3 @@
-// src/services/chatService.ts
-
 import { Response } from 'express';
 import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';

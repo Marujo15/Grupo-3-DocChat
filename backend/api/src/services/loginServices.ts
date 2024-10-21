@@ -29,7 +29,7 @@ export const authenticateUser = async (email: string, password: string) => {
         expiresIn: "5d",
       });
       
-      return { auth: true, token };
+      return { auth: true, token, id: user[0].id };
     }
 
     return { auth: false, token: "" };

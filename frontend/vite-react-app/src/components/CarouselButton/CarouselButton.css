@@ -26,3 +26,9 @@
     outline: none;
     box-shadow: none; 
 }
+
+.carousel-button:disabled {
+    background-color: #242424;
+    color: #4F4F4F;
+    cursor: not-allowed;
+}

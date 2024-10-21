@@ -2,41 +2,25 @@ import React, { useState } from "react";
 import "./ChatArea.css";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
-import { Message } from "../../interfaces";
+import { Message } from "../../interfaces/MessageInterfaces";
 
 const ChatArea: React.FC = () => {
-    const [url, setUrl] = useState("");
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
-    const [loadedUrls, setLoadedUrls] = useState<string[]>([]);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [urls, setUrls] = useState([]);
 
-    // Função para carregar dados da URL (pode ser usada para scraping)
-    const handleScrape = async (event: React.FormEvent) => {
-        event.preventDefault();
-        try {
-            const response = await fetch("http://localhost:3000/api/scrape", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ url }),
-            });
-            const data = await response.json();
-            console.log(data);
-            setLoadedUrls((prevUrls) => [...prevUrls, url]);
-            setUrl(""); // Limpa o input após carregar a URL
-        } catch (error) {
-            console.error("Error:", error);
-        }
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
-    // Função para enviar a pergunta e obter a resposta da IA
+    // Function to ask a question to the AI
     const handleAskQuestion = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        // Adiciona a pergunta à lista de mensagens
+        // Adds the user question to the messages list
         setMessages((prevMessages) => [...prevMessages, { sender: "user", text: question }]);
-        setQuestion("");
+        setQuestion("Como posso ajudar?");
 
         try {
             const response = await fetch("http://localhost:3000/api/chat", {
@@ -53,7 +37,7 @@ const ChatArea: React.FC = () => {
 
             const data = await response.json();
 
-            // Adiciona a resposta da IA à lista de mensagens
+            // Adds the AI response to the messages list
             setMessages((prevMessages) => [...prevMessages, { sender: "ai", text: data.response }]);
 
         } catch (error) {
@@ -63,62 +47,54 @@ const ChatArea: React.FC = () => {
 
     return (
         <div className="chat-area">
-            {/* Formulário para carregar a URL */}
-            <form onSubmit={handleScrape} className="input-button-container">
-                <div className="input-with-button">
-                    <Input
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        placeholder="Digite aqui a URL para carregar os dados"
-                        className="user-input"
-                        id="load-data-input"
-                        pattern="https?://.+"
-                        title="Por favor, insira uma URL válida começando com http:// ou https://"
-                        required
-                    />
-                    <Button type="submit" id="load-data-btn" className="url-button" onClick={() => {}}>
-                        Carregar dados
-                    </Button>
+                <div className="dropdown-container">
+                    <button className="dropdown-button" onClick={toggleDropdown}>
+                        {isDropdownOpen ? "Esconder URLs carregadas" : "Mostrar URLs carregdas"}
+                    </button>
+                    {isDropdownOpen && (
+                        urls.length > 0 ? (
+                            <ul className="dropdown-list">
+                                {urls.map((url, index) => (
+                                    <li key={index} className="dropdown-item">
+                                        {url}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>Nenhuma URL carregada! Para carregar url's vá para a Área do usuário.</p>
+                        )
+                    )}
                 </div>
-            </form>
-
-            {/* Mensagem de URLs carregadas */}
-            {loadedUrls.length > 0 && (
-                <div className="url-loaded-message">
-                    {loadedUrls.map((loadedUrl, index) => (
-                        <p key={index}>
-                            Url <a href={loadedUrl} target="_blank" rel="noopener noreferrer">{loadedUrl}</a> carregada!
-                        </p>
-                    ))}
-                </div>
-            )}
-
-            {/* Área do chat */}
-            <div className="chat-messages">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.sender}`}>
-                        <div className={`bubble ${msg.sender}`}>
-                            <p>{msg.text}</p>
-                        </div>
+                {/* Chat area */}
+                {/* { messages.length === 0 ? ( */}
+                    {/* <></> */}
+                {/* ) : ( */}
+                    <div className="chat-messages">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`message ${msg.sender}`}>
+                                <div className={`bubble ${msg.sender}`}>
+                                    <p>{msg.text}</p>
+                                </div>
+                            </div>
+                        ))}
+                {/* Form to send questions */}
+                <form onSubmit={handleAskQuestion} className="input-button-container">
+                    <div className="input-with-button">
+                        <Input
+                            value={question}
+                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setQuestion(e.target.value)}
+                            placeholder="Como posso ajudar?"
+                            className="user-input"
+                            id="ask-input"
+                        />
+                        <Button type="submit" id="ask-button" className="ask-button" onClick={() => {}}>
+                            Perguntar
+                        </Button>
                     </div>
-                ))}
-            </div>
+                </form>
+                    </div>
+                {/* )} */}
 
-            {/* Formulário para enviar perguntas */}
-            <form onSubmit={handleAskQuestion} className="input-button-container">
-                <div className="input-with-button">
-                    <Input
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        placeholder="Como posso ajudar?"
-                        className="user-input"
-                        id="ask-input"
-                    />
-                    <Button type="submit" id="ask-button" className="ask-button" onClick={() => {}}>
-                        Perguntar
-                    </Button>
-                </div>
-            </form>
         </div>
     );
 };

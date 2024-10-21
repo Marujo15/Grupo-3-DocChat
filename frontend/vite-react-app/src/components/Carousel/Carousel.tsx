@@ -1,30 +1,45 @@
-import React, { useRef, useState, useEffect } from "react";
-import "./Carousel.css";
+import React, { useEffect, useState, useRef } from "react";
 import ChatHistoryCard from "../ChatHistoryCard/ChatHistoryCard";
 import CarouselButton from "../CarouselButton/CarouselButton";
+import { ChatCard } from "../../interfaces/ChatInterfaces";
+import { CarouselProps } from "../../interfaces/CarouselInterfaces";
+import { useChat } from "../../context/ChatContext";
+import { getAllChats } from "../../utils/chatApi";
+import { formatDate } from "../../utils/formatDate";
+import "./Carousel.css";
 
-const Carousel: React.FC = () => {
-    const carouselRef = useRef<HTMLDivElement>(null);
+const Carousel: React.FC<CarouselProps> = ({ userId }) => {
     const [showButtons, setShowButtons] = useState(false);
+    const [isAtStart, setIsAtStart] = useState(true);
+    const [isAtEnd, setIsAtEnd] = useState(false);
+    const [cards, setCards] = useState<ChatCard[]>([]);
+    const [carouselClass, setCarouselClass] = useState("center");
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const { chats } = useChat();
 
-    const scrollLeft = () => {
-        if (carouselRef.current) {
-            carouselRef.current.scrollBy({ left: -200, behavior: "smooth" });
-        }
-    };
-
-    const scrollRight = () => {
-        if (carouselRef.current) {
-            carouselRef.current.scrollBy({ left: 200, behavior: "smooth" });
-        }
-    };
+    useEffect(() => {
+        const fetchChats = async () => {
+            try {
+                const data = await getAllChats(userId);
+                setCards(data);
+            } catch (error) {
+                console.error("Error when making the request:", error);
+            }
+        };
+        fetchChats();
+    }, [userId, cards]);
 
     useEffect(() => {
         const handleResize = () => {
-            if (carouselRef.current) {
+            if (carouselRef.current && cardRef.current) {
                 const carouselWidth = carouselRef.current.offsetWidth;
-                const totalCardWidth = cards.length * 210;
+                const cardWidth = cardRef.current.offsetWidth;
+                const totalCardWidth = cards.length * cardWidth;
+
                 setShowButtons(totalCardWidth > carouselWidth);
+                setIsAtStart(carouselRef.current.scrollLeft === 0);
+                setIsAtEnd(carouselRef.current.scrollLeft + carouselWidth >= totalCardWidth);
             }
         };
 
@@ -34,28 +49,67 @@ const Carousel: React.FC = () => {
         return () => {
             window.removeEventListener("resize", handleResize);
         };
-    }, []);
+    }, [cards]);
 
-    // Exemplo de dados de cards
-    const cards = [
-        { date: "2023-10-01", title: "Conversa 1" },
-        { date: "2023-10-02", title: "Conversa 2" },
-        { date: "2023-10-02", title: "Conversa 3" },
-        { date: "2023-10-02", title: "Conversa 4" },
-        { date: "2023-10-02", title: "Conversa 5" },
-        { date: "2023-10-02", title: "Conversa 6" },
-        { date: "2023-10-02", title: "Conversa 7" },
-    ];
+    useEffect(() => {
+        if (chats.length >= 4) {
+            setCarouselClass("flex-start");
+        } else {
+            setCarouselClass("center");
+        }
+    }, [chats.length]);
+
+    const scrollLeft = () => {
+        if (carouselRef.current && cardRef.current) {
+            const cardWidth = cardRef.current.offsetWidth;
+            carouselRef.current.scrollBy({ left: -cardWidth, behavior: "smooth" });
+            setTimeout(() => {
+                if (carouselRef.current) {
+                    setIsAtStart(carouselRef.current.scrollLeft === 0);
+                    setIsAtEnd(carouselRef.current.scrollLeft + carouselRef.current.offsetWidth >= carouselRef.current.scrollWidth);
+                }
+            }, 300);
+        }
+    };
+
+    const scrollRight = () => {
+        if (carouselRef.current && cardRef.current) {
+            const cardWidth = cardRef.current.offsetWidth;
+            carouselRef.current.scrollBy({ left: cardWidth, behavior: "smooth" });
+            setTimeout(() => {
+                if (carouselRef.current) {
+                    setIsAtStart(carouselRef.current.scrollLeft === 0);
+                    setIsAtEnd(carouselRef.current.scrollLeft + carouselRef.current.offsetWidth >= carouselRef.current.scrollWidth);
+                }
+            }, 300);
+        }
+    };
+
+    const handleDelete = (id: string) => {
+        setCards(cards.filter(card => card.id !== id));
+    };
+
+    const handleEdit = (id: string, newName: string) => {
+        setCards(cards.map(card => card.id === id ? { ...card, title: newName } : card));
+    };
 
     return (
         <div className="carousel-container">
-            {showButtons && <CarouselButton direction="left" onClick={scrollLeft} />}
-            <div className="carousel" ref={carouselRef}>
-                {cards.map((card, index) => (
-                    <ChatHistoryCard key={index} date={card.date} title={card.title} />
+            {showButtons && chats.length >= 4 && <CarouselButton direction="left" onClick={scrollLeft} disabled={isAtStart} />}
+            <div className={`carousel ${carouselClass}`} ref={carouselRef}>
+                {cards.map(card => (
+                    <div key={card.id} ref={cardRef}>
+                        <ChatHistoryCard
+                            chatId={card.id}
+                            date={formatDate(card.created_at)}
+                            title={card.title}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
+                    </div>
                 ))}
             </div>
-            {showButtons && <CarouselButton direction="right" onClick={scrollRight} />}
+            {showButtons && chats.length >= 4 && <CarouselButton direction="right" onClick={scrollRight} disabled={isAtEnd} />}
         </div>
     );
 };
