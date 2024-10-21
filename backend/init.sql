@@ -18,12 +18,16 @@ CREATE TABLE IF NOT EXISTS chats (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    chat_id UUID REFERENCES chats(id),
-    sender VARCHAR(15) CHECK (sender IN ('user', 'ia', 'system', 'toolCall', 'toolMessage')) NOT NULL, 
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+CREATE TABLE messages (
+    id VARCHAR(50) PRIMARY KEY,
+    chat_id VARCHAR(50) REFERENCES chats(id),
+    sender VARCHAR(20) CHECK (sender IN ('user', 'ia', 'system', 'tool_call', 'tool_message')) NOT NULL,
+    content TEXT,
+    tool_name VARCHAR(100),
+    input TEXT,
+    output TEXT,
+    created_at TIMESTAMP NOT NULL
+
 );
 
 CREATE TABLE IF NOT EXISTS urls (
