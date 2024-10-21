@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../database/database";
+import { SECRET_KEY } from "../config";
 
 export const authenticateJWT = (
   req: Request,
@@ -11,6 +11,12 @@ export const authenticateJWT = (
 
   if (!token) {
     res.status(401).json({ message: "Access Denied" });
+    return;
+  }
+
+  if (!SECRET_KEY) {
+    console.error("No SECRET_KEY defined.");
+    res.status(500).json({ message: "Internal Server Error" });
     return;
   }
 

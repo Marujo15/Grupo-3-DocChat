@@ -1,6 +1,6 @@
 import { pool } from "../database/database";
 import { ErrorApi } from "../errors/ErrorApi";
-import { IUrl } from "../interfaces/url";
+import { IUrl, IVector } from "../interfaces/url";
 
 export const urlRepository = {
   getUrlsByUserId: async (userId: string): Promise<string[]> => {
@@ -31,33 +31,65 @@ export const urlRepository = {
 
   saveUrls: async (urls: IUrl[]): Promise<string[]> => {
     const query = `
-      WITH urls_data (id, base_url, url, content, vector) AS (
-          VALUES 
-          ${urls.map((_) => `($1, $2, $3, $4, $5)`).join(", ")}
-      )
-      INSERT INTO urls (id, base_url, url, content, vector)
-      SELECT id, base_url, url, content, vector
-      FROM urls_data
+      INSERT INTO urls (id, base_url, url, content)
+      VALUES ${urls
+        .map(
+          (_, i) =>
+            `($${i * 4 + 1}, $${i * 4 + 2}, $${i * 4 + 3}, $${i * 4 + 4})`
+        )
+        .join(", ")}
       RETURNING id;
     `;
 
-    const values = urls.flatMap((url) => [
-      url.id,
-      url.baseUrl,
-      url.url,
-      url.content,
+    const values = urls.flatMap(({ id, baseUrl, url, content }) => [
+      id,
+      baseUrl,
+      url,
+      content,
     ]);
 
     try {
       const result = await pool.query(query, values);
-
-      const newUrlIds = result.rows.map((row) => row.id);
-
-      return newUrlIds;
+      return result.rows.map((row) => row.id);
     } catch (error) {
       console.error("Error saving URLs:", error);
       throw new ErrorApi({
         message: "Failed to save user URLs.",
+        status: 500,
+      });
+    }
+  },
+
+  saveVectors: async (vectors: IVector[]): Promise<void> => {
+    const query = `
+      INSERT INTO vectors (id, url_id, base_url, content, vector)
+      VALUES ${vectors
+        .map(
+          (_, i) =>
+            `
+              ($${i * 5 + 1}, $${i * 5 + 2}, $${i * 5 + 3}, 
+               $${i * 5 + 4}, $${i * 5 + 5}::vector)
+            `
+        )
+        .join(", ")};
+    `;
+
+    const values = vectors.flatMap(
+      ({ id, urlId, baseUrl, content, vector }) => [
+        id,
+        urlId,
+        baseUrl,
+        content,
+        JSON.stringify(vector),
+      ]
+    );
+
+    try {
+      await pool.query(query, values);
+    } catch (error) {
+      console.error("Error saving vectors:", error);
+      throw new ErrorApi({
+        message: "Failed to save user vectors.",
         status: 500,
       });
     }
