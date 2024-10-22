@@ -21,6 +21,10 @@ import {
   BaseLanguageModel,
   BaseLanguageModelInput,
 } from "@langchain/core/language_models/base";
+import { concat } from "@langchain/core/utils/stream";
+import { ChatAnthropic } from "@langchain/anthropic";
+import { concat } from "@langchain/core/utils/stream";
+import type { AIMessageChunk } from "@langchain/core/messages";
 
 export const chatServices = {
   createChat: async (title: string, userId: string) => {
@@ -137,6 +141,16 @@ export const chatServices = {
     const finalMessage = await llmWithTools.invoke(newMessage);
 
     // ! Implementar stream ! //
+    const coletado: AIMessageChunk | undefined = undefined;
+
+    for await (const chunk of finalMessage) {
+      if (coletado === undefined) {
+        coletado = chunk;
+      }
+      else {
+        coletado = concat (coletado, chunk);
+      }
+    }
 
     if (typeof finalMessage.content === "string") {
       return finalMessage.content;
