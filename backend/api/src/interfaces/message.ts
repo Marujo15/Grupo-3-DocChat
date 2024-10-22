@@ -1,10 +1,8 @@
 export interface IMessage {
-  id: string;
+  id?: string;
   chatId: string;
   sender: 'user' | 'ia' | 'system' | 'tool_call' | 'tool_message';
   content?: string;
   tool_name?: string;
-  input?: string;
-  output?: string;
   createdAt: string;
 }

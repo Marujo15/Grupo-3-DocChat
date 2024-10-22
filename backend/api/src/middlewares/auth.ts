@@ -11,6 +11,7 @@ export const authenticateJWT = (
   res: Response,
   next: NextFunction
 ): void => {
+  console.log(req.cookies)
   const token = req.cookies.session_id;
 
   if (!token) {

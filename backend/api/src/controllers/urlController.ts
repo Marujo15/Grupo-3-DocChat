@@ -180,7 +180,9 @@ export const urlController = {
         res.status(error.status).json(response);
       }
       console.error(error);
-      res.status(500).json({ message: "Failed to get URLs for the given chat." });
+      res
+        .status(500)
+        .json({ message: "Failed to get URLs for the given chat." });
     }
-  }
+  },
 };
