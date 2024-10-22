@@ -6,9 +6,10 @@ import { IUser } from "../interfaces/user";
 export const loginController = {
   authenticate: async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
+    //CORREÇÃO POSTERIOR: mudar para { username, password }, senão não faz sentido a criação do username
 
     if (!email || !password) {
-      res.status(400).json({ error: "Email and password are required." });
+      res.status(400).json({ error: "Email and password are required" });
       return;
     }
 
@@ -21,11 +22,11 @@ export const loginController = {
       );
 
       if (!auth) {
-        res.status(400).json({ error: "Invalid email and/or password." });
+        res.status(400).json({ error: "Invalid email and/or password" });
         return;
       }
 
-      const maxAge = 5 * 24 * 60 * 60 * 1000; // 5 dias de duração
+      const maxAge = 5 * 24 * 60 * 60 * 1000;
 
       res.cookie("session_id", token, { maxAge, httpOnly: true });
 
@@ -49,7 +50,7 @@ export const loginController = {
 
       res
         .status(500)
-        .json({ error: "Failed to authenticate user, server error." });
+        .json({ error: "Failed to authenticate user, server error" });
       return;
     }
   },
@@ -59,13 +60,13 @@ export const loginController = {
       if (!req.cookies.session_id) {
         res
           .status(400)
-          .json({ success: false, message: "You are not logged in." });
+          .json({ success: false, message: "You are not logged in" });
         return;
       }
-      // Deleta o cookie 'session_id'
+
       res.clearCookie("session_id", { path: "/" });
 
-      res.status(200).json({ success: true, message: "Logout successful." });
+      res.status(200).json({ success: true, message: "Logout successful" });
       return;
     } catch (error) {
       if (error instanceof ErrorApi) {
@@ -73,7 +74,9 @@ export const loginController = {
         return;
       }
 
-      res.status(500).json({ error: "Failed to logout, server error." });
+      res
+        .status(500)
+        .json({ error: "Internal server error when trying to log out" });
       return;
     }
   },
