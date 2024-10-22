@@ -1,7 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { PageInfo } from "../interfaces/PageInfo";
 import { scrapeRepository } from "../repositories/scrapeRepository";
-import { questionService } from "./questionService";
 import { IUrl, IVector } from "../interfaces/url";
 import { urlRepository } from "../repositories/urlRepository";
 
@@ -61,4 +60,4 @@ const scrapeData = async (url: string) => {
 
 //   return { urlsToSave, vectorsToSave }; // Retorna urlsToSave e vectorsToSave
 // };
-export { scrapeData, /* processScrapedData */ };
+export { scrapeData /* processScrapedData */ };

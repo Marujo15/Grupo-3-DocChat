@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS chats (
 
 CREATE TABLE messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    chat_id VARCHAR(50) REFERENCES chats(id),
+    chat_id UUID REFERENCES chats(id),
     sender VARCHAR(20) CHECK (sender IN ('user', 'ia', 'system', 'tool_call', 'tool_message')) NOT NULL,
     content TEXT,
     tool_name VARCHAR(100),
@@ -36,21 +36,21 @@ CREATE TABLE IF NOT EXISTS urls (
 
 CREATE TABLE IF NOT EXISTS vectors (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    url_id VARCHAR(50) REFERENCES urls(id),
+    url_id UUID REFERENCES urls(id),
     base_url VARCHAR(250) NOT NULL,
     content TEXT NOT NULL,
     vector vector(1536) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_urls (
-    user_id VARCHAR(50) REFERENCES users(id),
-    url_id VARCHAR(50) REFERENCES urls(id),
+    user_id UUID REFERENCES users(id),
+    url_id UUID REFERENCES urls(id),
     PRIMARY KEY (user_id, url_id)
 );
 
 CREATE TABLE IF NOT EXISTS chats_urls (
-    chat_id VARCHAR(50) REFERENCES chats(id),
-    base_url VARCHAR(250) REFERENCES NOT NULL,
+    chat_id UUID REFERENCES chats(id),
+    base_url VARCHAR(250) NOT NULL,
     PRIMARY KEY (chat_id, base_url)
 );
 
