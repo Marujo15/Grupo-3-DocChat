@@ -1,14 +1,14 @@
-import express, { Application } from "express";
 import dotenv from "dotenv";
+import { CORS_ORIGIN } from "./config";
+import express, { Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { pool } from "./database/database";
 import routes from "./routes/routes";
-import { CORS_ORIGIN } from "./config";
+import { pool } from "./database/database";
 
 dotenv.config();
 
-console.log("Origem do CORS:", CORS_ORIGIN);
+console.log("CORS Origin:", CORS_ORIGIN);
 
 const app: Application = express();
 
@@ -26,13 +26,12 @@ app.use(cookieParser());
 
 app.use("/api", routes);
 
-//função para inicializar o banco de dados e vector store (ambos PostgreSQL):
 export const startServer = async () => {
   try {
     await pool.connect();
-    console.log("Conexão com o banco de dados estabelecida.");
+    console.log("Database connection established");
   } catch (error) {
-    console.error("Erro ao inicializar banco de dados:", error);
+    console.error("Error initializing database:", error);
     process.exit(1);
   }
 };
