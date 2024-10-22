@@ -1,42 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { ChatCard } from "../../interfaces/ChatInterfaces";
+import { Url } from "../../interfaces/UrlInterfaces.ts";
 import { UserPageProps } from "../../interfaces/UserPageinterfaces.ts";
 import Button from "../Button/Button";
 import Header from "../Header/Header";
 import Input from "../Input/Input";
 import { deleteChat, getAllChats, updateChatTitle } from "../../utils/chatApi.ts";
+// import { deleteUrl, getAllUrls } from "../../utils/urlApi.ts";
 import { formatDate } from "../../utils/formatDate.ts";
 import { getUserData } from "../../utils/getUserData";
 import "./UserPage.css";
+import { useAuth } from "../../context/AuthContext.tsx";
 
 const UserPage: React.FC<UserPageProps> = ({ userId }) => {
+    const { user } = useAuth();
     const [userName, setUserName] = useState("");
     const [url, setUrl] = useState("");
     const [buttonText, setButtonText] = useState("Carregar dados");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [showActionConfirmation, setShowActionConfirmation] = useState(false);
+    const [actionMessage, setActionMessage] = useState("");
     const [chats, setChats] = useState<ChatCard[]>([]);
+    const [urls, setUrls] = useState<Url[]>([]);
     const [editChatId, setEditChatId] = useState<string | null>(null);
     const [newChatName, setNewChatName] = useState("");
-    const [showUpdateConfirmation, setShowUpdateConfirmation] = useState(false);
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-    const [loadedUrls, setLoadedUrls] = useState<string[]>([
-        "https://example.com",
-        "https://example1.org",
-        "https://example2.org",
-        "https://example3.org",
-        "https://example4.org",
-        "https://example5.org",
-        "https://example6.org",
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [deleteType, setDeleteType] = useState<"chat" | "url" | null>(null);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+    const [reloadChats, setReloadChats] = useState(false);
+    const [loadedUrls, setLoadedUrls] = useState([
+        { id: "3", url: "https://example2.org", base_url: "https://example2.org", vector: "vector3", content: "content3" },
+        { id: "4", url: "https://example3.org", base_url: "https://example3.org", vector: "vector4", content: "content4" },
+        { id: "5", url: "https://example4.org", base_url: "https://example4.org", vector: "vector5", content: "content5" },
+        { id: "6", url: "https://example5.org", base_url: "https://example5.org", vector: "vector6", content: "content6" },
+        { id: "7", url: "https://example6.org", base_url: "https://example6.org", vector: "vector7", content: "content7" }
     ]);
 
     useEffect(() => {
         const fetchChats = async () => {
-            const chats = await getAllChats(userId);
-            setChats(chats);
+            if (user) {
+                const chats = await getAllChats(user.id);
+                setChats(chats);
+            }
         };
+        setReloadChats(false);
 
         fetchChats();
+    }, [userId, reloadChats]);
+
+    useEffect(() => {
+        const fetchUrls = async () => {
+            // const urls = await getAllUrls(userId);
+            setUrls(urls);
+        };
+
+        fetchUrls();
     }, [userId, chats]);
     
     useEffect(() => {
@@ -50,34 +69,12 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
         fetchUserData();
     }, []);
 
-    const handleDeleteUrl = (url: string) => {
-        setLoadedUrls((prevUrls) => prevUrls.filter((u) => u !== url));
-    };
-
-    const handleDeleteChat = async (chatId: string) => {
-        try {
-            await deleteChat(chatId);
-            setChats(chats);
-            setShowDeleteConfirmation(true);
-            setTimeout(() => {
-                setShowDeleteConfirmation(false);
-            }, 3000);
-        } catch (error) {
-            console.error("Erro ao deletar o chat:", error);
-        }
-    };
-
-    const handleEditChat = (chatId: string, title: string) => {
-        setEditChatId(chatId);
-        setNewChatName(title);
-    };
-
     // Function to scrape the URL and load the data
     const handleScrape = async (event: React.FormEvent) => {
         event.preventDefault();
 
         // Check if the URL is already loaded
-        if (loadedUrls.includes(url)) {
+        if (loadedUrls.some((loadedUrl) => loadedUrl.url === url)) {
             setErrorMessage("Esta URL já foi carregada.");
             setTimeout(() => {
                 setErrorMessage("");
@@ -99,7 +96,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
             });
             const data = await response.json();
             console.log(data);
-            setLoadedUrls((prevUrls) => [...prevUrls, url]);
+            // setLoadedUrls((prevUrls) => [...prevUrls, url]);
             setUrl("");
         } catch (error) {
             console.error("Error:", error);
@@ -112,18 +109,90 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
         }
     };
 
+    const handleDeleteUrl = (urlId: string) => {
+        setDeleteType("url");
+        setItemToDelete(urlId);
+        setShowModal(true);
+    };
+    
+    const handleDeleteChat = (id: string) => {
+        setDeleteType("chat");
+        setItemToDelete(id);
+        setShowModal(true);
+    };
+    
+    const handleConfirmDelete = async (itemToDelete: string) => {
+            if (deleteType === "url" && itemToDelete) {
+                try {
+                    // await deleteUrl(itemToDelete);
+                    // setUrls(urls.filter((url) => url.id !== itemToDelete));
+                    setActionMessage("Url deletada com sucesso!");
+                    setShowActionConfirmation(true);
+                    setTimeout(() => {
+                        setShowActionConfirmation(false);
+                        setActionMessage("");
+                    }, 3000);
+                    setItemToDelete(null);
+                } catch (error) {
+                    console.error("Erro ao deletar a URL:", error);
+                    setErrorMessage("Erro ao deletar a URL.");
+                }
+            } else if (deleteType === "chat" && itemToDelete) {
+                try {
+                    await deleteChat(itemToDelete);
+                    setItemToDelete(null);
+                    setActionMessage("Chat deletado com sucesso!");
+                    setShowActionConfirmation(true);
+                    setTimeout(() => {
+                        setShowActionConfirmation(false);
+                        setActionMessage("");
+                    }, 3000);
+                } catch (error) {
+                    console.error("Erro ao deletar o chat:", error);
+                    setErrorMessage("Erro ao deletar o Chat.");
+                    setTimeout(() => {
+                        setErrorMessage("");
+                    }, 3000);
+                }
+            }
+            // if (actionMessage) {
+            //     setShowActionConfirmation(true);
+            //     setTimeout(() => {
+            //         setShowActionConfirmation(false);
+            //         setActionMessage("");
+            //     }, 3000);
+            // }
+            setShowModal(false);
+            setDeleteType(null);
+            setItemToDelete(null);
+            setReloadChats(true);
+    };
+
+    const handleCancelDelete = () => {
+        setShowModal(false);
+        setItemToDelete(null);
+    };
+
+    const handleEditChat = (chatId: string, title: string) => {
+        setEditChatId(chatId);
+        setNewChatName(title);
+    };
+
     const handleSaveChatName = async (chatId: string) => {
         try {
             await updateChatTitle(chatId, newChatName);
+            setReloadChats(prev => !prev);
             setChats(chats);
-            setShowUpdateConfirmation(true);
+            setShowActionConfirmation(true);
+            setActionMessage("Chat atualizado com sucesso!");
             setTimeout(() => {
-                setShowUpdateConfirmation(false);
+                setShowActionConfirmation(false);
+                setActionMessage("");
             }, 3000);
         } catch (error) {
             console.error("Erro ao modificar o título do chat:", error);
         }
-
+        
         setEditChatId(null);
         setNewChatName("");
     };
@@ -163,10 +232,10 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
                         <ul>
                             {loadedUrls.map((url, index) => (
                                 <li key={index} className="loaded-url-item">
-                                    <a href={url} target="_blank" rel="noopener noreferrer">
-                                        {url}
+                                    <a href={url.url} target="_blank" rel="noopener noreferrer">
+                                        {url.base_url}
                                     </a>
-                                    <button className="delete-btn" onClick={() => handleDeleteUrl(url)}>
+                                    <button className="delete-btn" onClick={() => handleDeleteUrl(url.id)}>
                                     <img src="/images/Trash_Full.svg" alt="Deletar" />
                                     </button>
                                 </li>
@@ -175,16 +244,6 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
                     </section>
                     <section>
                         <h2 id="saved-chats">Chats Salvos</h2>
-                        {showDeleteConfirmation && (
-                            <div className="delete-confirmation">
-                                <p>Chat deletado com sucesso!</p>
-                            </div>
-                        )}
-                        {showUpdateConfirmation && (
-                            <div className="update-confirmation">
-                                <p>Chat atualizado com sucesso com sucesso!</p>
-                            </div>
-                        )}
                         <ul>
                             {chats.map((chat) => (
                                 <li key={chat.id} className="saved-chat-item">
@@ -221,6 +280,23 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
                         </ul>
                     </section>
                 </div>
+                {showActionConfirmation && (
+                    <div className="action-msg-div">
+                        <p>{actionMessage}</p>
+                    </div>
+                )}
+
+                {showModal && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <p>Tem certeza de que deseja deletar este chat?</p>
+                            <div id="user-choices-div">
+                                <button onClick={() => itemToDelete && handleConfirmDelete(itemToDelete)}>Sim</button>
+                                <button onClick={handleCancelDelete}>Não</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );

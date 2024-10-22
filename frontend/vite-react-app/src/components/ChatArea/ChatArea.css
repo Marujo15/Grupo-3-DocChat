@@ -154,3 +154,13 @@
 .dropdown-button {
     width: 100%;
 }
+
+.dropdown-container a {
+    color: #10A37F;
+    text-decoration: none;
+}
+
+.dropdown-container a:hover {
+    color: #218838;
+    text-decoration: none;
+}

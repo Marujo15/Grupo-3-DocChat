@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./ChatHistoryCard.css";
 import { ChatHistoryCardProps } from "../../interfaces/ChatInterfaces.ts";
 import { useNavigate } from "react-router-dom";
+import { updateChatTitle, deleteChat } from "../../utils/chatApi.ts";
 
 const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, onEdit, onDelete }) => {
     const [editChatId, setEditChatId] = useState<string | null>(null);
@@ -9,8 +10,8 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
     const [isEditing, setIsEditing] = useState(false);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [chatToDelete, setChatToDelete] = useState<string | null>(null);
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false);
-    const [showUpdateConfirmation, setShowUpdateConfirmation] = useState<boolean>(false);
+    const [showActionConfirmation, setShowActionConfirmation] = useState(false);
+    const [actionMessage, setActionMessage] = useState("");
 
     const navigate = useNavigate();
 
@@ -22,22 +23,13 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
 
     const handleSaveChatName = async (id: string) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/chat/${id}`, {
-                method: "PATCH",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ title: newChatName }),
-            });
+            await updateChatTitle(id, newChatName);
 
-            if (!response.ok) {
-                throw new Error(`Erro na requisição: ${response.statusText}`);
-            }
-
-            setShowUpdateConfirmation(true);
+            setActionMessage("Chat atualizado com sucesso!");
+            setShowActionConfirmation(true);
             setTimeout(() => {
-                setShowUpdateConfirmation(false);
+                setActionMessage("");
+                setShowActionConfirmation(false);
             }, 3000);
         } catch (error) {
             console.error("Erro ao modificar o título do chat:", error);
@@ -52,29 +44,23 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
         setShowModal(true);
     };
 
-    const handleConfirmDelete = async (id: string) => {
+    const handleConfirmDelete = async () => {
         if (chatToDelete) {
             try {
-                const response = await fetch(`http://localhost:3000/api/chat/${id}`, {
-                    method: "DELETE",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
+                await deleteChat(chatToDelete);
 
-                if (!response.ok) {
-                    throw new Error(`Erro na requisição: ${response.statusText}`);
-                }
-
-                onDelete(chatToDelete);
-                setShowDeleteConfirmation(true);
+                setActionMessage("Chat deletado com sucesso!");
+                setShowActionConfirmation(true);
                 setTimeout(() => {
-                    setShowDeleteConfirmation(false);
-                }, 3000);
+                    setActionMessage("");
+                    setShowActionConfirmation(false);
+                }, 5000);
             } catch (error) {
                 console.error("Erro ao deletar o chat:", error);
             }
+        }
+        if (chatToDelete) {
+            onDelete(chatToDelete);
         }
         setShowModal(false);
         setChatToDelete(null);
@@ -106,9 +92,11 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
                 )}
             </div>
             <div className="action-buttons">
+                {!isEditing && (
                 <button className="edit-btn" onClick={() => handleEditChat(chatId, title)}>
                     <img src="/images/Vector.svg" alt="Renomear" />
                 </button>
+                )}
                 {isEditing && (
                     <button className="save-btn" onClick={() => handleSaveChatName(chatId)}>
                     <img src="/images/Save.svg" alt="Renomear" />
@@ -124,16 +112,16 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
                     <div className="modal-content">
                         <p>Tem certeza de que deseja deletar este chat?</p>
                         <div id="user-choices-div">
-                            <button onClick={() => handleConfirmDelete(chatId)}>Sim</button>
+                            <button onClick={handleConfirmDelete}>Sim</button>
                             <button onClick={handleCancelDelete}>Não</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {showDeleteConfirmation && (
-                <div className="delete-confirmation">
-                    <p>Chat deletado com sucesso!</p>
+            {showActionConfirmation && (
+                <div className="action-msg-div">
+                    <p>{actionMessage}</p>
                 </div>
             )}
         </div>

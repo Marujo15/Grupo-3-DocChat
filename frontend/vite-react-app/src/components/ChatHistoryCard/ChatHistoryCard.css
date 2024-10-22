@@ -91,7 +91,7 @@
     width: 60%;
 }
 
-.delete-confirmation {
+.delete-confirmation, .update-confirmation {
     align-items: center;
     background-color: #10A37F;
     border-radius: 5px;

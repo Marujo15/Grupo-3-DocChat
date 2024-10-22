@@ -33,7 +33,6 @@ export const chatController = {
         return;
       }
       const userId = req.user;
-      console.log({userId})
       const chat = await chatServices.createChat(userId);
       res.status(201).json(chat);
     } catch (error) {

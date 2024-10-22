@@ -126,14 +126,15 @@
     width: 100%;
 }
 
-.update-confirmation, .delete-confirmation {
+.action-msg-div {
     align-items: center;
     background-color: #10A37F;
-    border-radius: 5px;
+    border-radius: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     color: white;
     display: flex;
     flex-direction: row;
+    height: 40px;
     justify-content: center;
     padding: 0 2rem;
     position: fixed;

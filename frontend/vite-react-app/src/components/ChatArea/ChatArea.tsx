@@ -3,16 +3,20 @@ import "./ChatArea.css";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
 import { Message } from "../../interfaces/MessageInterfaces";
+import { useAuth } from "../../context/AuthContext"; // Importe o contexto de autenticação
 
 const ChatArea: React.FC = () => {
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [urls, setUrls] = useState([]);
+    const { user } = useAuth();
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
+
+    const isLoggedIn = !!user;
 
     // Function to ask a question to the AI
     const handleAskQuestion = async (event: React.FormEvent) => {
@@ -61,7 +65,7 @@ const ChatArea: React.FC = () => {
                                 ))}
                             </ul>
                         ) : (
-                            <p>Nenhuma URL carregada! Para carregar url's vá para a Área do usuário.</p>
+                            <p>Nenhuma URL carregada! Para carregar url's vá para a <a href={isLoggedIn ? "/user" : "/login"}>Área do usuário</a>.</p>
                         )
                     )}
                 </div>
