@@ -14,6 +14,7 @@ const Carousel: React.FC<CarouselProps> = ({ userId }) => {
     const [isAtEnd, setIsAtEnd] = useState(false);
     const [cards, setCards] = useState<ChatCard[]>([]);
     const [carouselClass, setCarouselClass] = useState("center");
+    const [showSlideButtons, setShowSlideButtons] = useState(false);
     const carouselRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const { chats } = useChat();
@@ -52,12 +53,14 @@ const Carousel: React.FC<CarouselProps> = ({ userId }) => {
     }, [cards]);
 
     useEffect(() => {
-        if (chats.length >= 4) {
+        if (cardRef.current && carouselRef.current && cards.length * cardRef.current.offsetWidth >= carouselRef.current.offsetWidth) {
             setCarouselClass("flex-start");
+            setShowSlideButtons(true);
         } else {
             setCarouselClass("center");
+            setShowSlideButtons(false);
         }
-    }, [chats.length]);
+    }, [cards.length]);
 
     const scrollLeft = () => {
         if (carouselRef.current && cardRef.current) {
@@ -95,7 +98,7 @@ const Carousel: React.FC<CarouselProps> = ({ userId }) => {
 
     return (
         <div className="carousel-container">
-            {showButtons && chats.length >= 4 && <CarouselButton direction="left" onClick={scrollLeft} disabled={isAtStart} />}
+            {showButtons && showSlideButtons && <CarouselButton direction="left" onClick={scrollLeft} disabled={isAtStart} />}
             <div className={`carousel ${carouselClass}`} ref={carouselRef}>
                 {cards.map(card => (
                     <div key={card.id} ref={cardRef}>
@@ -109,7 +112,7 @@ const Carousel: React.FC<CarouselProps> = ({ userId }) => {
                     </div>
                 ))}
             </div>
-            {showButtons && chats.length >= 4 && <CarouselButton direction="right" onClick={scrollRight} disabled={isAtEnd} />}
+            {showButtons && showSlideButtons && <CarouselButton direction="right" onClick={scrollRight} disabled={isAtEnd} />}
         </div>
     );
 };

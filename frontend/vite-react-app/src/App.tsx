@@ -24,7 +24,6 @@ const UserProfilePage: React.FC = () => {
     const { user } = useAuth();
     return (
         <>
-            <Header variant="default" />
             <UserPage userId={user ? user.id : ""} />
         </>
     );
