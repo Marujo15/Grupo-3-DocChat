@@ -19,15 +19,12 @@ CREATE TABLE IF NOT EXISTS chats (
 );
 
 CREATE TABLE messages (
-    id VARCHAR(50) PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chat_id VARCHAR(50) REFERENCES chats(id),
     sender VARCHAR(20) CHECK (sender IN ('user', 'ia', 'system', 'tool_call', 'tool_message')) NOT NULL,
     content TEXT,
     tool_name VARCHAR(100),
-    input TEXT,
-    output TEXT,
     created_at TIMESTAMP NOT NULL
-
 );
 
 CREATE TABLE IF NOT EXISTS urls (

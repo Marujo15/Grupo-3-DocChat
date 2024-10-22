@@ -104,35 +104,32 @@ export const userCotroller = {
     }
   },
 
-  getAllUsers: async (
-      req: Request,
-      res: Response
-    ): Promise<void> => {
-      const response: IAPIResponse<IUser[]> = { success: false };
-      try {
-        const users: IUser[] = await userServices.getAllUsers();
-    
-        response.data = users;
-        response.success = true;
-        response.message = "Users retrieved successfully";
-    
-        res.status(200).json(response);
-      } catch (error: any) {
-        if (error instanceof ErrorApi) {
-          console.log(error);
-    
-          res.status(error.status).json({
-            data: null,
-            error: error.message,
-          });
-    
-          return;
-        }
-        console.error(error);
-    
-        res.status(500).json({ data: null, error: "Internal server erro" });
+  getAllUsers: async (req: Request, res: Response): Promise<void> => {
+    const response: IAPIResponse<IUser[]> = { success: false };
+    try {
+      const users: IUser[] = await userServices.getAllUsers();
+
+      response.data = users;
+      response.success = true;
+      response.message = "Users retrieved successfully";
+
+      res.status(200).json(response);
+    } catch (error: any) {
+      if (error instanceof ErrorApi) {
+        console.log(error);
+
+        res.status(error.status).json({
+          data: null,
+          error: error.message,
+        });
+
+        return;
       }
+      console.error(error);
+
+      res.status(500).json({ data: null, error: "Internal server erro" });
     }
+  },
 };
 
 // export const getAllUsers = async (

@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import { chatServices } from '../services/chatService';
-import { IAPIResponse } from '../interfaces/api';
-import { ErrorApi } from '../errors/ErrorApi';
-import { IMessage } from '../interfaces/message';
+import { Request, Response } from "express";
+import { chatServices } from "../services/chatService";
+import { IAPIResponse } from "../interfaces/api";
+import { ErrorApi } from "../errors/ErrorApi";
+import { IMessage } from "../interfaces/message";
 
 export const chatController = {
   getChatResponse: async (req: Request, res: Response) => {
@@ -10,19 +10,19 @@ export const chatController = {
     const userId = req.user as string;
 
     if (!message || !chatId) {
-      res.status(400).send('Mensagem e chatId são obrigatórios.');
+      res.status(400).send("Mensagem e chatId são obrigatórios.");
       return;
     }
 
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
 
     try {
-      await chatServices.handleChatRequest(message, res, chatId, userId, urls);
+      await chatServices.sendMessage(userId, chatId, message);
     } catch (error: any) {
-      console.error('Erro ao processar a requisição:', error);
-      res.write('data: [ERROR]\n\n');
+      console.error("Erro ao processar a requisição:", error);
+      res.write("data: [ERROR]\n\n");
       res.end();
     }
   },
@@ -33,12 +33,12 @@ export const chatController = {
     const userId = req.user as string;
 
     if (!title) {
-      res.status(400).send('O título é obrigatório.');
+      res.status(400).send("O título é obrigatório.");
       return;
     }
 
     if (!userId) {
-      res.status(401).send('Usuário não autenticado.');
+      res.status(401).send("Usuário não autenticado.");
       return;
     }
 
@@ -57,7 +57,7 @@ export const chatController = {
       const response: IAPIResponse<IMessage[]> = { success: false };
 
       if (!chatId) {
-        res.status(400).send('O chatId é obrigatório.');
+        res.status(400).send("O chatId é obrigatório.");
         return;
       }
 
@@ -65,20 +65,57 @@ export const chatController = {
 
       response.success = true;
       response.data = result;
-      response.message = 'Chat recuperado com sucesso.';
+      response.message = "Chat recuperado com sucesso.";
 
       res.status(200).json(response);
     } catch (error) {
-      console.error('Erro ao recuperar o chat:', error);
+      console.error("Erro ao recuperar o chat:", error);
       if (error instanceof ErrorApi) {
         res.status(error.status).send(error.message);
         return;
       }
-      res.status(500).send('Erro ao recuperar o chat.');
+      res.status(500).send("Erro ao recuperar o chat.");
     }
   },
 
   getAllChats: async (req: Request, res: Response) => {
     // Implementar se necessário
+  },
+
+  sendMessage: async (req: Request, res: Response) => {
+    const response: IAPIResponse<string> = { success: false };
+    const { message, chatId } = req.body;
+    const userId = req.user;
+
+    if (!userId) {
+      res.status(401).json({ error: "Usuário não autenticado" });
+      return;
+    }
+
+    if (!chatId) {
+      res.status(400).json({ error: "Chat ID não fornecido" });
+      return;
+    }
+
+    if (!message) {
+      res.status(400).json({ error: "Mensagem não fornecida" });
+      return;
+    }
+
+    try {
+      const result: string = await chatServices.sendMessage(
+        userId,
+        chatId,
+        message
+      );
+
+      response.success = true;
+      response.message = result;
+
+      return res.json({ response });
+    } catch (error) {
+      console.error("Erro ao processar a pergunta:", error);
+      return res.status(500).json({ error: "Erro ao processar a pergunta" });
+    }
   },
 };

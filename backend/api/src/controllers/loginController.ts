@@ -29,19 +29,17 @@ export const loginController = {
 
       res.cookie("session_id", token, { maxAge, httpOnly: true });
 
-      res
-        .status(200)
-        .json({
-          auth,
-          token,
-          id,
-          message: "User successfully authenticated!",
-          user: { 
-            id: user.id, 
-            username: user.username, 
-            password: user.password
-          },
-        });
+      res.status(200).json({
+        auth,
+        token,
+        id,
+        message: "User successfully authenticated!",
+        user: {
+          id: user.id,
+          username: user.username,
+          password: user.password,
+        },
+      });
       return;
     } catch (error) {
       if (error instanceof ErrorApi) {
