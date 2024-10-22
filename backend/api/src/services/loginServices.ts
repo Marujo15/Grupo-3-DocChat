@@ -8,7 +8,14 @@ export const getUser = async (email: string) => {
   try {
     const user = await userRepository.getUserByEmail(email);
 
-    return user;
+    if (!user || !(user.length > 0)) {
+      throw new ErrorApi({
+        message: "User not found",
+        status: 404,
+      });
+    }
+
+    return user[0];
   } catch (error) {
     throw error;
   }

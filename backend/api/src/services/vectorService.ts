@@ -3,7 +3,6 @@ import { OPENAI_API_KEY } from "../config";
 
 const embeddings = new OpenAIEmbeddings({
   apiKey: OPENAI_API_KEY,
-  model: "text-embedding-3-small",
 });
 
 export const vectorServices = {
@@ -20,7 +19,7 @@ export const vectorServices = {
     }
   },
 
-  splitIntoChunks: (content: string, chunkSize: number): string[] => {
+  splitIntoChunks: (content: string, chunkSize: number = 10000): string[] => {
     const chunks: string[] = [];
     for (let i = 0; i < content.length; i += chunkSize) {
       chunks.push(content.substring(i, i + chunkSize));

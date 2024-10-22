@@ -1,11 +1,8 @@
 import { Router, Request, Response } from "express";
-import dotenv from "dotenv";
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
 import { OPENAI_API_KEY } from "../config";
 import { chatController } from "../controllers/chatController";
-
-dotenv.config();
 
 const router = Router();
 
