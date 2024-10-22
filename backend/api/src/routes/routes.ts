@@ -9,7 +9,7 @@ import scrapeRoutes from "./scrapeRoutes";
 
 const router = Router();
 
-router.use("/chat", /* authenticateJWT ,*/ chatRoutes);
+router.use("/chat", authenticateJWT , chatRoutes);
 router.use("/users", authenticateJWT, userRouter);
 router.use("/url", authenticateJWT, urlRoutes);
 router.use("/auth", authRouter);
