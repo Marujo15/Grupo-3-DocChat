@@ -2,14 +2,13 @@ import { pool } from '../database/database';
 import { IMessage } from '../interfaces/message';
 
 export const chatRepository = {
-  createChat: async (id: string, userId: string, title: string, createdAt: string) => {
-    const queryText = `
-      INSERT INTO chats (id, user_id, title, created_at)
-      VALUES ($1, $2, $3, $4)
+   createChat: async (userId: string, title: string) => {
+    const query = `
+      INSERT INTO chats (user_id, title, created_at)
+      VALUES ($1, $2, NOW())
       RETURNING id, user_id, title, created_at;
     `;
-    const values = [id, userId, title, createdAt];
-    const result = await pool.query(queryText, values);
+    const result = await pool.query(query, [userId, title]);
     return result.rows[0];
   },
 
@@ -53,5 +52,45 @@ export const chatRepository = {
     `;
     const result = await pool.query(queryText, [chatId]);
     return result.rows;
+  },
+
+  getAllChatsByUserId: async (userId: string) => {
+    const query = `
+      SELECT id, user_id, title, created_at
+      FROM chats
+      WHERE user_id = $1
+      ORDER BY created_at;
+    `;
+
+    const result = await pool.query(query, [userId]);
+
+    return result.rows;
+  },
+
+  updateChatTitle: async (id: string, title: string) => {
+    const query = `
+            UPDATE chats
+            SET title = $2
+            WHERE id = $1
+            RETURNING id, user_id, title, created_at
+        `;
+
+    const result = await pool.query(query, [id, title]);
+
+    if (!result.rows.length) {
+      throw new Error("Chat not found.");
+    }
+
+    return result.rows[0];
+  },
+
+  deleteChat: async (id: string) => {
+    const query = `
+            DELETE FROM chats
+            WHERE id = $1
+            RETURNING id
+        `;
+
+    const result = await pool.query(query, [id]);
   },
 };

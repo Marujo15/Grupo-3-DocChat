@@ -95,15 +95,29 @@ export const chatServices = {
     res.json({ message: aiMessageContent });
   },
 
-  createChat: async (title: string, userId: string) => {
-    const id = uuid();
-    const createdAt = new Date().toISOString();
-    const result = await chatRepository.createChat(id, userId, title, createdAt);
-    return { message: 'Chat created', data: result };
+  createChat: async (userId: string) => {
+    const title = "teste";
+    const chat = await chatRepository.createChat(userId, title);
+    return chat;
   },
 
   getChatById: async (chatId: string): Promise<IMessage[]> => {
     const result: IMessage[] = await chatRepository.getMessagesByChatId(chatId);
+    return result;
+  },
+
+  getAllChatsByUserId: async (userId: string) => {
+    const result = await chatRepository.getAllChatsByUserId(userId);
+    return result;
+  },
+
+  updateChatTitle: async (chatId: string, title: string) => {
+    const result = await chatRepository.updateChatTitle(chatId, title);
+    return result;
+  },
+
+  deleteChat: async (chatId: string) => {
+    const result = await chatRepository.deleteChat(chatId);
     return result;
   },
 };
