@@ -219,8 +219,8 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
                         <ul>
                             {urls.map((url, index) => (
                                 <li key={index} className="loaded-url-item">
-                                    <a href={url} target="_blank" rel="noopener noreferrer">
-                                        {url}
+                                    <a href={`${url}`} target="_blank" rel="noopener noreferrer">
+                                        {`${url}`}
                                     </a>
                                     <button className="delete-btn" onClick={() => handleDeleteUrl(url.id)}>
                                     <img src="/images/Trash_Full.svg" alt="Deletar" />

@@ -1,26 +1,25 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 import { ChatCard } from "../interfaces/ChatInterfaces";
 
 interface ChatContextProps {
     chats: ChatCard[];
     addChat: (chat: ChatCard) => void;
+    currentChatId: string | null;
+    setCurrentChatId: (id: string) => void;
 }
 
 const ChatContext = createContext<ChatContextProps | undefined>(undefined);
 
-interface ChatProviderProps {
-    children: React.ReactNode;
-}
-
-export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
+export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [chats, setChats] = useState<ChatCard[]>([]);
+    const [currentChatId, setCurrentChatId] = useState<string | null>(null);
 
     const addChat = (chat: ChatCard) => {
         setChats((prevChats) => [...prevChats, chat]);
     };
 
     return (
-        <ChatContext.Provider value={{ chats, addChat }}>
+        <ChatContext.Provider value={{ chats, addChat, currentChatId, setCurrentChatId }}>
             {children}
         </ChatContext.Provider>
     );

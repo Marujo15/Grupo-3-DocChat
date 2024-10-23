@@ -35,3 +35,21 @@
     cursor: pointer;
     color: white;
 }
+
+.success-message {
+    align-items: center;
+    background-color: #10A37F;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    color: white;
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+    justify-content: center;
+    padding: 0 2rem;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    white-space: nowrap;
+    width: auto;
+}
