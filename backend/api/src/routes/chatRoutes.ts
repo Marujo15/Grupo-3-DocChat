@@ -13,6 +13,6 @@ router.post("/create", chatController.createChat);
 // router.patch("/:chatId", chatController.updateChatTitle);
 // router.delete("/:chatId", chatController.deleteChat);
 
-router.post("/", authenticateJWT, chatController.sendMessage);
+router.post("/", authenticateJWT, chatController.getChatResponse);
 
 export default router;
