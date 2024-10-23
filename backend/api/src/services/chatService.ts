@@ -99,7 +99,7 @@ export const chatServices = {
   // },
 
   createChat: async (userId: string) => {
-    const title = "teste";
+    const title = "Nova conversa";
     const chat = await chatRepository.createChat(userId, title);
     return chat;
   },
