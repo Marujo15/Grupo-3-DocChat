@@ -9,5 +9,6 @@ router.post("/", urlController.saveUrl);
 router.get("/", urlController.getUrlsByUserId);
 router.get("/:chatId", urlController.getUrlsByChatId);
 router.get("/pages", urlController.searchPagesByQuestion);
+router.delete("/", urlController.deleteUrl);
 
 export default router;

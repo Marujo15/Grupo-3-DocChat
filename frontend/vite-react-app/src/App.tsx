@@ -15,7 +15,7 @@ const MainPage: React.FC = () => {
         <>
             <Header variant="default" />
             <Carousel userId={user ? user.id : ""} />
-            <ChatArea />
+            <ChatArea userId={user ? user.id : ""} />
         </>
     );
 };

@@ -54,7 +54,7 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
                 setTimeout(() => {
                     setActionMessage("");
                     setShowActionConfirmation(false);
-                }, 5000);
+                }, 3000);
             } catch (error) {
                 console.error("Erro ao deletar o chat:", error);
             }
