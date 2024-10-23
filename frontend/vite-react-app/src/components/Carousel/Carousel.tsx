@@ -25,7 +25,7 @@ const Carousel: React.FC<CarouselProps> = () => {
     const fetchChats = async () => {
       try {
         if (user) {
-          const data = await getAllChats(user.id);
+          const data = await getAllChats();
           setCards(data);
         }
       } catch (error) {

@@ -2,14 +2,14 @@ import { ChatCard } from "../interfaces/ChatInterfaces";
 
 const API_BASE_URL = "http://localhost:3000/api/chat";
 
-export const getAllChats = async (userId: string): Promise<ChatCard[]> => {
+export const getAllChats = async (): Promise<ChatCard[]> => {
     try {
         const token = localStorage.getItem("token");
         if (!token) {
             console.error("Token not found. Redirecting to Login Page.");
             return [];
         }
-        const response = await fetch(`${API_BASE_URL}/${userId}`, {
+        const response = await fetch(`${API_BASE_URL}`, {
             method: "GET",
             credentials: "include",
             headers: {

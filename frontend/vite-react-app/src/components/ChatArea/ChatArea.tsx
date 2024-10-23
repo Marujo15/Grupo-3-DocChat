@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext"; // Importe o contexto de au
 import { getAllUrls } from "../../utils/urlApi";
 import { ChatAreaProps } from "../../interfaces/ChatInterfaces";
 import { Url } from "../../interfaces/UrlInterfaces";
+import { getAllChats } from "../../utils/chatApi";
 
 const ChatArea: React.FC<ChatAreaProps> = () => {
     const [question, setQuestion] = useState("");
@@ -16,13 +17,10 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
     const { user } = useAuth();
 
     useEffect(() => {
-        if (user) {
-            console.log("User:", user.id);
-        }
         const fetchUrls = async () => {
             try {
                 if (user) {
-                    const data = await getAllUrls(user.id);
+                    const data = await getAllUrls();
                     setUrls(data);
                 }
             } catch (error) {
@@ -41,6 +39,10 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
     // Function to ask a question to the AI
     const handleAskQuestion = async (event: React.FormEvent) => {
         event.preventDefault();
+
+        const userChats = await getAllChats();
+        const lastChatId = userChats[userChats.length - 1].id;
+        console.log(lastChatId)
 
         // Adds the user question to the messages list
         setMessages((prevMessages) => [...prevMessages, { sender: "user", text: question }]);
@@ -80,7 +82,7 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
                             <ul className="dropdown-list">
                                 {urls.map((url, index) => (
                                     <li key={index} className="dropdown-item">
-                                        {url}
+                                        {`${url}`}
                                     </li>
                                 ))}
                             </ul>
