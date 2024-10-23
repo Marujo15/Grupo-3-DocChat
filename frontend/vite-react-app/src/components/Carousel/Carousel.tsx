@@ -19,13 +19,13 @@ const Carousel: React.FC<CarouselProps> = () => {
     const carouselRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
-    const { chat } = useChat();
+    const chat = useChat();
 
     useEffect(() => {
         const fetchChats = async () => {
             try {
                 if (user) {
-                    const data = await getAllChats(user.id);
+                    const data = await getAllChats();
                     setCards(data);
                 }
             } catch (error) {

@@ -8,7 +8,7 @@ import { authenticateJWT } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/:userId", chatController.getAllChatsByUserId);
+router.get("/", chatController.getAllChatsByUserId);
 router.post("/create", chatController.createChat);
 router.patch("/:chatId", chatController.updateChatTitle);
 router.delete("/:chatId", chatController.deleteChat);

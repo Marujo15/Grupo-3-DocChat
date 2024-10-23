@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Header from "../Header/Header";
 import "./Login.css";
+import { createNewChat, getAllChats } from "../../utils/chatApi";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -31,7 +32,15 @@ const Login: React.FC = () => {
             const data = await response.json();
             setUser({ id: data.user.id, username: data.user.username });
             localStorage.setItem("token", data.token);
-            navigate("/");
+
+            const userChats = await getAllChats();
+            if (userChats.length > 0) {
+                navigate(`/chat/${userChats[userChats.length - 1].id}`);
+            } else {
+                const newChat = await createNewChat();
+                navigate(`/chat/${newChat.id}`);
+            }
+
         } catch (error) {
             setError("Erro ao fazer login. Tente novamente.");
             setTimeout(() => {

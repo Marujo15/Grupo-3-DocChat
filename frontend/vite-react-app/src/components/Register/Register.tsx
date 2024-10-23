@@ -9,6 +9,7 @@ const Register: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const navigate = useNavigate();
 
     const handleRegister = async (event: React.FormEvent) => {
@@ -27,7 +28,11 @@ const Register: React.FC = () => {
                 throw new Error(`Erro na requisição: ${response.statusText}`);
             }
 
-            navigate("/login");
+            setSuccessMessage("Cadastro realizado com sucesso! Redirecionando para o login...");
+            setTimeout(() => {
+                setSuccessMessage("");
+                navigate("/login");
+            }, 2000);
         } catch (error) {
             console.error("Erro ao cadastrar o usuário:", error);
             setError("Erro ao cadastrar o usuário. Por favor, tente novamente.");
@@ -77,7 +82,8 @@ const Register: React.FC = () => {
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     {error && <p className="error-message">{error}</p>}
-                    <button type="submit">Cadastrar</button>
+                    {successMessage && <p className="success-message">{successMessage}</p>}
+                    <button id="register-btn" type="submit">Cadastrar</button>
                 </form>
             </div>
         </>
