@@ -7,8 +7,9 @@ import { useChat } from "../../context/ChatContext";
 import { getAllChats } from "../../utils/chatApi";
 import { formatDate } from "../../utils/formatDate";
 import "./Carousel.css";
+import { useAuth } from "../../context/AuthContext";
 
-const Carousel: React.FC<CarouselProps> = ({ userId }) => {
+const Carousel: React.FC<CarouselProps> = () => {
     const [showButtons, setShowButtons] = useState(false);
     const [isAtStart, setIsAtStart] = useState(true);
     const [isAtEnd, setIsAtEnd] = useState(false);
@@ -17,18 +18,22 @@ const Carousel: React.FC<CarouselProps> = ({ userId }) => {
     const [showSlideButtons, setShowSlideButtons] = useState(false);
     const carouselRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
+    const { user } = useAuth();
+    const { chat } = useChat();
 
     useEffect(() => {
         const fetchChats = async () => {
             try {
-                const data = await getAllChats(userId);
-                setCards(data);
+                if (user) {
+                    const data = await getAllChats(user.id);
+                    setCards(data);
+                }
             } catch (error) {
                 console.error("Error when making the request:", error);
             }
         };
         fetchChats();
-    }, [userId, cards]);
+    }, [user, chat.chats]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -59,7 +64,7 @@ const Carousel: React.FC<CarouselProps> = ({ userId }) => {
             setCarouselClass("center");
             setShowSlideButtons(false);
         }
-    }, [cards.length]);
+    }, [cards]);
 
     const scrollLeft = () => {
         if (carouselRef.current && cardRef.current) {

@@ -1,16 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./ChatArea.css";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
 import { Message } from "../../interfaces/MessageInterfaces";
 import { useAuth } from "../../context/AuthContext"; // Importe o contexto de autenticação
+import { getAllUrls } from "../../utils/urlApi";
+import { ChatAreaProps } from "../../interfaces/ChatInterfaces";
+import { Url } from "../../interfaces/UrlInterfaces";
 
-const ChatArea: React.FC = () => {
+const ChatArea: React.FC<ChatAreaProps> = () => {
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [urls, setUrls] = useState([]);
+    const [urls, setUrls] = useState<Url[]>([]);
     const { user } = useAuth();
+
+    useEffect(() => {
+        if (user) {
+            console.log("User:", user.id);
+        }
+        const fetchUrls = async () => {
+            try {
+                if (user) {
+                    const data = await getAllUrls(user.id);
+                    setUrls(data);
+                }
+            } catch (error) {
+                console.error("Error when making the request:", error);
+            }
+        };
+        fetchUrls();
+    }, []);
 
     const toggleDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);

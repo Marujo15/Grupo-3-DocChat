@@ -6,7 +6,7 @@ import Button from "../Button/Button";
 import Header from "../Header/Header";
 import Input from "../Input/Input";
 import { deleteChat, getAllChats, updateChatTitle } from "../../utils/chatApi.ts";
-// import { deleteUrl, getAllUrls } from "../../utils/urlApi.ts";
+import { deleteUrl, getAllUrls } from "../../utils/urlApi.ts";
 import { formatDate } from "../../utils/formatDate.ts";
 import { getUserData } from "../../utils/getUserData";
 import "./UserPage.css";
@@ -29,13 +29,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
     const [deleteType, setDeleteType] = useState<"chat" | "url" | null>(null);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [reloadChats, setReloadChats] = useState(false);
-    const [loadedUrls, setLoadedUrls] = useState([
-        { id: "3", url: "https://example2.org", base_url: "https://example2.org", vector: "vector3", content: "content3" },
-        { id: "4", url: "https://example3.org", base_url: "https://example3.org", vector: "vector4", content: "content4" },
-        { id: "5", url: "https://example4.org", base_url: "https://example4.org", vector: "vector5", content: "content5" },
-        { id: "6", url: "https://example5.org", base_url: "https://example5.org", vector: "vector6", content: "content6" },
-        { id: "7", url: "https://example6.org", base_url: "https://example6.org", vector: "vector7", content: "content7" }
-    ]);
+    const [loadedUrl, setLoadedUrl] = useState("");
 
     useEffect(() => {
         const fetchChats = async () => {
@@ -47,16 +41,19 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
         setReloadChats(false);
 
         fetchChats();
-    }, [userId, reloadChats]);
+    }, []);
 
     useEffect(() => {
         const fetchUrls = async () => {
-            // const urls = await getAllUrls(userId);
-            setUrls(urls);
+            try {
+                const data = await getAllUrls();
+                setUrls(data);
+            } catch (error) {
+                console.error("Error when making the request:", error);
+            }
         };
-
         fetchUrls();
-    }, [userId, chats]);
+    }, []);
     
     useEffect(() => {
         const fetchUserData = async () => {
@@ -74,39 +71,26 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
         event.preventDefault();
 
         // Check if the URL is already loaded
-        if (loadedUrls.some((loadedUrl) => loadedUrl.url === url)) {
-            setErrorMessage("Esta URL já foi carregada.");
-            setTimeout(() => {
-                setErrorMessage("");
-            }, 3000);
-            return;
-        }
+        urls.forEach((loadedUrl) => {
+            console.log("loadedUrl", loadedUrl)
+            console.log("url", url)
+            if (loadedUrl === url) {
+                console.log("url", url)
+                setErrorMessage("Esta URL já foi carregada.");
+                setTimeout(() => {
+                    setErrorMessage("");
+                }, 3000);
+                return;
+            }
+        })
+
+        setUrl("");
+
+        await getAllUrls();
 
         setIsLoading(true);
         setButtonText("Carregando...");
         setErrorMessage("");
-        
-        try {
-            const response = await fetch("http://localhost:3000/api/scrape", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ url }),
-            });
-            const data = await response.json();
-            console.log(data);
-            // setLoadedUrls((prevUrls) => [...prevUrls, url]);
-            setUrl("");
-        } catch (error) {
-            console.error("Error:", error);
-        } finally {
-            setIsLoading(false);
-            setButtonText("Dados carregados!");
-            setTimeout(() => {
-                setButtonText("Carregar dados");
-            }, 3000);
-        }
     };
 
     const handleDeleteUrl = (urlId: string) => {
@@ -115,17 +99,19 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
         setShowModal(true);
     };
     
-    const handleDeleteChat = (id: string) => {
+    const handleDeleteChat = (chatId: string) => {
         setDeleteType("chat");
-        setItemToDelete(id);
+        setItemToDelete(chatId);
         setShowModal(true);
     };
     
     const handleConfirmDelete = async (itemToDelete: string) => {
             if (deleteType === "url" && itemToDelete) {
+                console.log("type url")
                 try {
-                    // await deleteUrl(itemToDelete);
-                    // setUrls(urls.filter((url) => url.id !== itemToDelete));
+                    await deleteUrl(itemToDelete);
+                    setUrls(urls.filter((url) => url.id !== itemToDelete));
+                    console.log(urls)
                     setActionMessage("Url deletada com sucesso!");
                     setShowActionConfirmation(true);
                     setTimeout(() => {
@@ -138,6 +124,7 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
                     setErrorMessage("Erro ao deletar a URL.");
                 }
             } else if (deleteType === "chat" && itemToDelete) {
+                console.log("type chat")
                 try {
                     await deleteChat(itemToDelete);
                     setItemToDelete(null);
@@ -230,10 +217,10 @@ const UserPage: React.FC<UserPageProps> = ({ userId }) => {
                     <section>
                         <h2 id="loaded-urls">URLs Carregadas</h2>
                         <ul>
-                            {loadedUrls.map((url, index) => (
+                            {urls.map((url, index) => (
                                 <li key={index} className="loaded-url-item">
-                                    <a href={url.url} target="_blank" rel="noopener noreferrer">
-                                        {url.base_url}
+                                    <a href={url} target="_blank" rel="noopener noreferrer">
+                                        {url}
                                     </a>
                                     <button className="delete-btn" onClick={() => handleDeleteUrl(url.id)}>
                                     <img src="/images/Trash_Full.svg" alt="Deletar" />
