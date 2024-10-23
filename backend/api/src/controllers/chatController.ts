@@ -6,23 +6,26 @@ import { IMessage } from "../interfaces/message";
 
 export const chatController = {
   getChatResponse: async (req: Request, res: Response) => {
-    const { message, chatId, urls } = req.body;
+    const { message, chatId } = req.body;
     const userId = req.user as string;
 
     if (!message || !chatId) {
-      res.status(400).send("Mensagem e chatId são obrigatórios.");
+      res.status(400).send("Message and chatId are required");
       return;
     }
 
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Transfer-Encoding', 'chunked');
 
     try {
-      await chatServices.sendMessage(userId, chatId, message);
+      const result = chatServices.sendMessage(userId, chatId, message);
+      for await (const chunk of result) {
+        res.write(chunk);
+      }
     } catch (error: any) {
       console.error("Erro ao processar a requisição:", error);
       res.write("data: [ERROR]\n\n");
+    } finally {
       res.end();
     }
   },
@@ -144,115 +147,115 @@ export const chatController = {
     }
   },
 
-  getAllChatsByUserId: async (req: Request, res: Response) => {
-    try {
-      if (!req.user) {
-        res.status(401).json({ error: "User not authenticated" });
-        return;
-      }
-      const userId = req.user;
-      const chats = await chatServices.getAllChatsByUserId(userId);
-      res.status(200).json(chats);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).json({ error: error.message });
-      } else {
-        res.status(500).json({ error: "Unknown error" });
-      }
-    }
-  },
+  // getAllChatsByUserId: async (req: Request, res: Response) => {
+  //   try {
+  //     if (!req.user) {
+  //       res.status(401).json({ error: "User not authenticated" });
+  //       return;
+  //     }
+  //     const userId = req.user;
+  //     const chats = await chatServices.getAllChatsByUserId(userId);
+  //     res.status(200).json(chats);
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       res.status(500).json({ error: error.message });
+  //     } else {
+  //       res.status(500).json({ error: "Unknown error" });
+  //     }
+  //   }
+  // },
 
-  updateChatTitle: async (req: Request, res: Response) => {
-    try {
-      const chatId = req.params.chatId;
-      const title = req.body.title;
-      const response: IAPIResponse<IMessage[]> = { success: false };
+  // updateChatTitle: async (req: Request, res: Response) => {
+  //   try {
+  //     const chatId = req.params.chatId;
+  //     const title = req.body.title;
+  //     const response: IAPIResponse<IMessage[]> = { success: false };
 
-      if (!chatId || !title) {
-        res.status(400).send("The chatId and title are required");
-        return;
-      }
-      const result = await chatServices.updateChatTitle(chatId, title);
+  //     if (!chatId || !title) {
+  //       res.status(400).send("The chatId and title are required");
+  //       return;
+  //     }
+  //     const result = await chatServices.updateChatTitle(chatId, title);
 
-      response.success = true;
-      response.data = result;
-      response.message = "Chat updated";
+  //     response.success = true;
+  //     response.data = result;
+  //     response.message = "Chat updated";
 
-      res.status(200).json(response);
-    } catch (error) {
-      console.error("Error updating chat:", error);
-      if (error instanceof ErrorApi) {
-        res.status(error.status).send(error.message);
-        return;
-      }
-      res.status(500).send("Error updating chat");
-    }
-  },
+  //     res.status(200).json(response);
+  //   } catch (error) {
+  //     console.error("Error updating chat:", error);
+  //     if (error instanceof ErrorApi) {
+  //       res.status(error.status).send(error.message);
+  //       return;
+  //     }
+  //     res.status(500).send("Error updating chat");
+  //   }
+  // },
 
-  deleteChat: async (req: Request, res: Response) => {
-    try {
-      const chatId = req.params.chatId;
-      const response: IAPIResponse<IMessage[]> = { success: false };
+  // deleteChat: async (req: Request, res: Response) => {
+  //   try {
+  //     const chatId = req.params.chatId;
+  //     const response: IAPIResponse<IMessage[]> = { success: false };
 
-      if (!chatId) {
-        res.status(400).send("The chatId is required");
-        return;
-      }
+  //     if (!chatId) {
+  //       res.status(400).send("The chatId is required");
+  //       return;
+  //     }
 
-      const result = await chatServices.deleteChat(chatId);
+  //     const result = await chatServices.deleteChat(chatId);
 
-      response.success = true;
-      response.message = "Chat deleted";
+  //     response.success = true;
+  //     response.message = "Chat deleted";
 
-      res.status(200).json(response);
-    } catch (error) {
-      console.error("Error deleting chat:", error);
-      if (error instanceof ErrorApi) {
-        res.status(error.status).send(error.message);
-        return;
-      }
-      res.status(500).send("Error deleting chat");
-    }
-  },
+  //     res.status(200).json(response);
+  //   } catch (error) {
+  //     console.error("Error deleting chat:", error);
+  //     if (error instanceof ErrorApi) {
+  //       res.status(error.status).send(error.message);
+  //       return;
+  //     }
+  //     res.status(500).send("Error deleting chat");
+  //   }
+  // },
 
   getAllChats: async (req: Request, res: Response) => {
     // Implementar se necessário
   },
 
-  sendMessage: async (req: Request, res: Response) => {
-    const response: IAPIResponse<string> = { success: false };
-    const { message, chatId } = req.body;
-    const userId = req.user;
+  // sendMessage: async (req: Request, res: Response) => {
+  //   const response: IAPIResponse<string> = { success: false };
+  //   const { message, chatId } = req.body;
+  //   const userId = req.user;
 
-    if (!userId) {
-      res.status(401).json({ error: "Usuário não autenticado" });
-      return;
-    }
+  //   if (!userId) {
+  //     res.status(401).json({ error: "Usuário não autenticado" });
+  //     return;
+  //   }
 
-    if (!chatId) {
-      res.status(400).json({ error: "Chat ID não fornecido" });
-      return;
-    }
+  //   if (!chatId) {
+  //     res.status(400).json({ error: "Chat ID não fornecido" });
+  //     return;
+  //   }
 
-    if (!message) {
-      res.status(400).json({ error: "Mensagem não fornecida" });
-      return;
-    }
+  //   if (!message) {
+  //     res.status(400).json({ error: "Mensagem não fornecida" });
+  //     return;
+  //   }
 
-    try {
-      const result: string = await chatServices.sendMessage(
-        userId,
-        chatId,
-        message
-      );
+  //   try {
+  //     const result: string = await chatServices.sendMessage(
+  //       userId,
+  //       chatId,
+  //       message
+  //     );
 
-      response.success = true;
-      response.message = result;
+  //     response.success = true;
+  //     response.message = result;
 
-      return res.json({ response });
-    } catch (error) {
-      console.error("Erro ao processar a pergunta:", error);
-      return res.status(500).json({ error: "Erro ao processar a pergunta" });
-    }
-  },
+  //     return res.json({ response });
+  //   } catch (error) {
+  //     console.error("Erro ao processar a pergunta:", error);
+  //     return res.status(500).json({ error: "Erro ao processar a pergunta" });
+  //   }
+  // },
 };
