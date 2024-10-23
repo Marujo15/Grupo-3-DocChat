@@ -16,3 +16,7 @@ export interface ChatCard {
     title: string;
     created_at: string;
 }
+
+export interface ChatAreaProps {
+    userId: string;
+}

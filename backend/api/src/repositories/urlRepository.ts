@@ -156,11 +156,41 @@ export const urlRepository = {
       );
     `;
 
+    // Remova as referências na tabela vectors
+    const deleteVectorsQuery = `
+    DELETE FROM vectors
+    WHERE url_id IN (
+      SELECT u.id
+      FROM urls u
+      JOIN users_urls uu ON u.id = uu.url_id
+      WHERE u.base_url = $1
+      AND uu.user_id = $2
+    );
+  `;
+
+    // Remova as referências na tabela users_urls
+    const deleteUsersUrlsQuery = `
+    DELETE FROM users_urls
+    WHERE url_id IN (
+      SELECT u.id
+      FROM urls u
+      JOIN users_urls uu ON u.id = uu.url_id
+      WHERE u.base_url = $1
+      AND uu.user_id = $2
+    );
+  `;
+
     try {
       // Primeiro, obtenha todos os IDs das URLs associadas ao userId e baseUrl
       const selectResult = await pool.query(selectQuery, [baseUrl, userId]);
 
       const allUrlIds = selectResult.rows.map((row: { id: string }) => row.id);
+
+      // Deleta as referências na tabela vectors
+      await pool.query(deleteVectorsQuery, [baseUrl, userId]);
+
+      // Deleta as referências na tabela users_urls
+      await pool.query(deleteUsersUrlsQuery, [baseUrl, userId]);
 
       // Em seguida, delete as URLs associadas a apenas um usuário
       await pool.query(deleteQuery, [baseUrl, userId]);
