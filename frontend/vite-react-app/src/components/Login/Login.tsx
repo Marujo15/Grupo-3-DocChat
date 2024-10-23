@@ -29,7 +29,7 @@ const Login: React.FC = () => {
             }
 
             const data = await response.json();
-            setUser({ id: data.userId, username: data.username });
+            setUser({ id: data.user.id, username: data.user.username });
             localStorage.setItem("token", data.token);
             navigate("/");
         } catch (error) {
