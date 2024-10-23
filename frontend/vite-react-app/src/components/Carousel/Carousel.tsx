@@ -17,7 +17,6 @@ const Carousel: React.FC<CarouselProps> = ({ userId }) => {
     const [showSlideButtons, setShowSlideButtons] = useState(false);
     const carouselRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
-    const { chats } = useChat();
 
     useEffect(() => {
         const fetchChats = async () => {
