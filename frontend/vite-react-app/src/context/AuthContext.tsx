@@ -1,50 +1,68 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
 
 interface User {
-    id: string;
-    username: string;
+  id: string;
+  username: string;
 }
 
 interface AuthContextType {
-    user: User | null;
-    setUser: (user: User) => void;
-    logout: () => void;
+  user: User | null;
+  setUser: (user: User) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
-    const handleSetUser = (user: User) => {
-        localStorage.setItem("user", JSON.stringify(user));
-        setUser(user);
-    };
+  const handleSetUser = (user: User) => {
+    localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
+  };
 
-    const logout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        setUser(null);
-    };
+  const logout = async () => {
+    try {
+      await fetch("localhost:3000/api/auth/logout", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    return (
-        <AuthContext.Provider value={{ user, setUser: handleSetUser, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+      setUser(null);
+    } catch (error) {
+      console.error("Error logging out:", error);
+      return;
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, setUser: handleSetUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

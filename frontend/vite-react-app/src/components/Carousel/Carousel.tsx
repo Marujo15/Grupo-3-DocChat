@@ -19,7 +19,7 @@ const Carousel: React.FC<CarouselProps> = () => {
     const carouselRef = useRef<HTMLDivElement>(null);
     const cardRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
-    const { chat } = useChat();
+    const chat = useChat();
 
     useEffect(() => {
         const fetchChats = async () => {
