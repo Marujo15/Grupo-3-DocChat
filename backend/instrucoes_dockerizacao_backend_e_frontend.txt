@@ -6,4 +6,13 @@ npm install
 para construir e rodar os containers do Docker (dentro da raiz do projeto):
 docker compose -f docker-compose.dev.yml up --build
 
-[o 'init.sql' dentro da pasta 'docker-entrypoint-initdb.d' dentro do container já dá os comandos SQL definidos no arquivo automaticamente quando o container do PostgreSQL é criado pela primeira vez]
+para entrar no container do banco de dados:
+docker exec -it grupo-3-docchat-database-1 /bin/bash
+
+entrar no psql:
+psql -U docchat-user -d docchat-db -h localhost
+
+conectar ao banco de dados criado:
+\c docchat-db
+
+popular manualmente usando os comandos que estão no 'test.sql' (backend>api>schema.sql).
