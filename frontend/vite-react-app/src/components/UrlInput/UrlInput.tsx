@@ -7,7 +7,7 @@ const UrlInput: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:5000/scrape", {
+            const response = await fetch("http://localhost:3000/scrape", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
