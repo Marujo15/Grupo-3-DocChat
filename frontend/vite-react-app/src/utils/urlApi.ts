@@ -30,13 +30,14 @@ export const getAllUrls = async (): Promise<Url[]> => {
     }
 };
 
-export const deleteUrl = async (urlId: string): Promise<Url[]> => {
-    const response = await fetch(`${API_BASE_URL}/${urlId}`, {
+export const deleteUrl = async (baseUrl: string): Promise<Url[]> => {
+    const response = await fetch(`${API_BASE_URL}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
+        body: JSON.stringify({ url: baseUrl }),
     });
 
     if (!response.ok) {
