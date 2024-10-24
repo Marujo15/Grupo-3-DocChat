@@ -91,7 +91,7 @@ export const updateChatTitle = async (chatId: string, newTitle: string): Promise
 
 export const getMessagesByChatId = async (chatId: string) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/${chatId}`, {
+        const response = await fetch(`${apiUrl}/api/chat${chatId}`, {
             method: "GET",
             credentials: "include",
             headers: {

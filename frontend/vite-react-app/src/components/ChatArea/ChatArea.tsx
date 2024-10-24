@@ -13,7 +13,7 @@ import { useChat } from "../../context/ChatContext";
 const ChatArea: React.FC<ChatAreaProps> = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [urls, setUrls] = useState<Url[]>([]);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
