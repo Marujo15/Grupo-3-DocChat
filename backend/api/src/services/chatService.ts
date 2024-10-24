@@ -203,10 +203,8 @@ export const chatServices = {
     chatHistory.unshift(prompt);
 
     const aiMessage: AIMessageChunk = await llmWithTools.invoke(chatHistory);
-      
-    // salvar no banco o aiMessage
-    await chatRepository.saveMessage(aiMessage, chatId);
 
+    await chatRepository.saveMessage(aiMessage, chatId);
     chatHistory.push(aiMessage);
 
     const toolsByName = {
@@ -228,8 +226,15 @@ export const chatServices = {
 
     const stream = await llm.stream(chatHistory);
 
+    let completeMessage = "";
+
     for await (const chunk of stream) {
+      completeMessage += chunk.content;
       yield chunk.content;
     }
+
+    const finalMessage = new AIMessage(completeMessage);
+
+    await chatRepository.saveMessage(finalMessage, chatId);
   },
 };
