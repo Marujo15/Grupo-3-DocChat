@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./ChatArea.css";
 import Input from "../Input/Input";
 import Button from "../Button/Button";
@@ -12,12 +12,20 @@ import { useChat } from "../../context/ChatContext";
 
 const ChatArea: React.FC<ChatAreaProps> = () => {
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  // const [messages, setMessages] = useState<Message[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [urls, setUrls] = useState<Url[]>([]);
+  const [reloadPage, setReloadPage] = useState(false);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const chatMessagesRef = useRef<HTMLDivElement | null>(null);
   const { user } = useAuth();
   const chat = useChat();
+
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
 
   useEffect(() => {
     const fetchLastChatId = async () => {
@@ -48,6 +56,12 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
       if (chat.currentChatId) {
         const messagesObj = await getMessagesByChatId(chat.currentChatId);
         const messages = messagesObj.data;
+
+        messages.map((msg: { content: string }) => {
+          if (msg.content === "") {
+            msg.content = "Analisando...";
+          }
+        });
         setChatMessages(messages);
       } else {
         setChatMessages([]);
@@ -66,12 +80,14 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
   // Function to ask a question to the AI
   const handleAskQuestion = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log("antes da requisição")
+
     try {
       const token = localStorage.getItem("token");
+
       if (!token) {
         throw new Error("Token de autenticação não encontrado");
       }
+
       const response = await fetch("http://localhost:3000/api/chat", {
         method: "POST",
         headers: {
@@ -84,24 +100,25 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
       if (!response.ok || !response.body) {
         throw new Error(`Erro na requisição: ${response.statusText}`);
       }
-      console.log("depois da requisição")
+
+      setReloadPage(!reloadPage);
 
       setQuestion("");
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      let accumulatedMessage = "";
+      // const reader = response.body.getReader();
+      // const decoder = new TextDecoder();
+      // let done = false;
+      // let accumulatedMessage = "";
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
+      // while (!done) {
+      //   const { value, done: readerDone } = await reader.read();
+      //   done = readerDone;
 
-        if (value) {
-          const chunk = decoder.decode(value, { stream: true });
-          accumulatedMessage += chunk;
-        }
-      }
+      //   if (value) {
+      //     const chunk = decoder.decode(value, { stream: true });
+      //     accumulatedMessage += chunk;
+      //   }
+      // }
 
       //   // Atualiza a última mensagem com o texto acumulado
       //   setMessages((prevMessages) => [
