@@ -10,30 +10,30 @@ import "./Carousel.css";
 import { useAuth } from "../../context/AuthContext";
 
 const Carousel: React.FC<CarouselProps> = () => {
-    const [showButtons, setShowButtons] = useState(false);
-    const [isAtStart, setIsAtStart] = useState(true);
-    const [isAtEnd, setIsAtEnd] = useState(false);
-    const [cards, setCards] = useState<ChatCard[]>([]);
-    const [carouselClass, setCarouselClass] = useState("center");
-    const [showSlideButtons, setShowSlideButtons] = useState(false);
-    const carouselRef = useRef<HTMLDivElement>(null);
-    const cardRef = useRef<HTMLDivElement>(null);
-    const { user } = useAuth();
-    const chat = useChat();
+  const [showButtons, setShowButtons] = useState(false);
+  const [isAtStart, setIsAtStart] = useState(true);
+  const [isAtEnd, setIsAtEnd] = useState(false);
+  const [cards, setCards] = useState<ChatCard[]>([]);
+  const [carouselClass, setCarouselClass] = useState("center");
+  const [showSlideButtons, setShowSlideButtons] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const chat = useChat();
 
-    useEffect(() => {
-        const fetchChats = async () => {
-            try {
-                if (user) {
-                    const data = await getAllChats(user.id);
-                    setCards(data);
-                }
-            } catch (error) {
-                console.error("Error when making the request:", error);
-            }
-        };
-        fetchChats();
-    }, [user, chat.chats]);
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        if (user) {
+          const data = await getAllChats();
+          setCards(data);
+        }
+      } catch (error) {
+        console.error("Error when making the request:", error);
+      }
+    };
+    fetchChats();
+  }, [user, chat.chats]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -58,15 +58,20 @@ const Carousel: React.FC<CarouselProps> = () => {
     };
   }, [cards]);
 
-    useEffect(() => {
-        if (cardRef.current && carouselRef.current && cards.length * cardRef.current.offsetWidth >= carouselRef.current.offsetWidth) {
-            setCarouselClass("flex-start");
-            setShowSlideButtons(true);
-        } else {
-            setCarouselClass("center");
-            setShowSlideButtons(false);
-        }
-    }, [cards]);
+  useEffect(() => {
+    if (
+      cardRef.current &&
+      carouselRef.current &&
+      cards.length * cardRef.current.offsetWidth >=
+        carouselRef.current.offsetWidth
+    ) {
+      setCarouselClass("flex-start");
+      setShowSlideButtons(true);
+    } else {
+      setCarouselClass("center");
+      setShowSlideButtons(false);
+    }
+  }, [cards]);
 
   const scrollLeft = () => {
     if (carouselRef.current && cardRef.current) {

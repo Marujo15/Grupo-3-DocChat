@@ -23,7 +23,6 @@ header {
     display: flex;
     flex-direction: row;
     gap: 15px;
-    justify-content: space-between;
     width: 100%;
 }
 
@@ -111,7 +110,7 @@ header {
     border: 1px solid #4f4f4f;
 }
 
-.login-btn, .register-btn {
+.login-btn, .register-btn, .aboutus-btn {
     background-color: #1a1a1a;
     border: 1px solid #4f4f4f;
     border-radius: 40px;
@@ -125,3 +124,21 @@ header {
     padding: 0.5rem 1rem;
     width: 100px;
 }
+
+.header-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+  }
+  
+  .left-buttons {
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .right-buttons {
+    display: flex;
+    justify-content: flex-end;
+  }
+  

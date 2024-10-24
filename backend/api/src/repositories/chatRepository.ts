@@ -31,7 +31,7 @@ export const chatRepository = {
     chatId: string
   ) => {
     const query = `
-      INSERT INTO messages (sender, content, chat_id) VALUES ($1, $2, $3)
+      INSERT INTO messages (sender, content, chat_id, created_at) VALUES ($1, $2, $3, NOW())
     `;
 
     if (message instanceof HumanMessage) {
