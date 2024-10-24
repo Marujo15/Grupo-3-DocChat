@@ -1,4 +1,4 @@
 export interface HeaderProps {
-    variant?: "default" | "login" | "register" | "user";
-    userName?: string;
+  variant?: "default" | "login" | "register" | "user" | "aboutus";
+  userName?: string;
 }
