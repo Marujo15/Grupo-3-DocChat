@@ -28,11 +28,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(user);
     };
 
-    const logout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        setUser(null);
-    };
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:3000/api/auth/logout", {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      setUser(null);
+    } catch (error) {
+      console.error("Error logging out:", error);
+      return;
+    }
+  };
 
     return (
         <AuthContext.Provider value={{ user, setUser: handleSetUser, logout }}>

@@ -6,23 +6,26 @@ import { IMessage } from "../interfaces/message";
 
 export const chatController = {
   getChatResponse: async (req: Request, res: Response) => {
-    const { message, chatId, urls } = req.body;
+    const { message, chatId } = req.body;
     const userId = req.user as string;
 
     if (!message || !chatId) {
-      res.status(400).send("Mensagem e chatId são obrigatórios.");
+      res.status(400).send("Message and chatId are required");
       return;
     }
 
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
+    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Transfer-Encoding", "chunked");
 
     try {
-      await chatServices.sendMessage(userId, chatId, message);
+      const result = chatServices.sendMessage(userId, chatId, message);
+      for await (const chunk of result) {
+        res.write(chunk);
+      }
     } catch (error: any) {
       console.error("Erro ao processar a requisição:", error);
       res.write("data: [ERROR]\n\n");
+    } finally {
       res.end();
     }
   },
@@ -127,7 +130,7 @@ export const chatController = {
         return;
       }
 
-      const result = await chatServices.deleteChat(chatId);
+      await chatServices.deleteChat(chatId);
 
       response.success = true;
       response.message = "Chat deleted";
@@ -147,40 +150,37 @@ export const chatController = {
     // Implementar se necessário
   },
 
-  sendMessage: async (req: Request, res: Response) => {
-    const response: IAPIResponse<string> = { success: false };
-    const { message, chatId } = req.body;
-    const userId = req.user;
-
-    if (!userId) {
-      res.status(401).json({ error: "Usuário não autenticado" });
-      return;
-    }
-
-    if (!chatId) {
-      res.status(400).json({ error: "Chat ID não fornecido" });
-      return;
-    }
-
-    if (!message) {
-      res.status(400).json({ error: "Mensagem não fornecida" });
-      return;
-    }
-
-    try {
-      const result: string = await chatServices.sendMessage(
-        userId,
-        chatId,
-        message
-      );
-
-      response.success = true;
-      response.message = result;
-
-      return res.json({ response });
-    } catch (error) {
-      console.error("Erro ao processar a pergunta:", error);
-      return res.status(500).json({ error: "Erro ao processar a pergunta" });
-    }
-  },
 };
+
+// sendMessage: async (req: Request, res: Response) => {
+//   const response: IAPIResponse<string> = { success: false };
+//   const { message, chatId } = req.body;
+//   const userId = req.user;
+
+//   if (!userId) {
+//     res.status(401).json({ error: "Usuário não autenticado" });
+//     return;
+//   }
+
+//   if (!chatId) {
+//     res.status(400).json({ error: "Chat ID não fornecido" });
+//     return;
+//   }
+
+//   if (!message) {
+//     res.status(400).json({ error: "Mensagem não fornecida" });
+//     return;
+//   }
+
+//   try {
+//     const result = chatServices.sendMessage(userId, chatId, message);
+
+//     response.success = true;
+//     response.message = result;
+
+//     return res.json({ response });
+//   } catch (error) {
+//     console.error("Erro ao processar a pergunta:", error);
+//     return res.status(500).json({ error: "Erro ao processar a pergunta" });
+//   }
+// },

@@ -1,5 +1,13 @@
 import { pool } from "../database/database";
-import { IMessage } from "../interfaces/message";
+import { ErrorApi } from "../errors/ErrorApi";
+import { IMessage, IMessageStored } from "../interfaces/message";
+import {
+  HumanMessage,
+  AIMessage,
+  ToolMessage,
+  mapStoredMessageToChatMessage,
+  StoredMessage,
+} from "@langchain/core/messages";
 
 export const chatRepository = {
   createChat: async (userId: string, title: string) => {
@@ -25,30 +33,52 @@ export const chatRepository = {
     return result.rows[0];
   },
 
-  saveMessage: async (message: IMessage) => {
-    const queryText = `
-      INSERT INTO messages (chat_id, sender, content, tool_name, created_at)
-      VALUES ($1, $2, $3, $4, $5);
+  saveMessage: async (
+    message: HumanMessage | AIMessage | ToolMessage,
+    chatId: string
+  ) => {
+    const query = `
+      INSERT INTO messages (sender, content, chat_id) VALUES ($1, $2, $3)
     `;
-    const values = [
-      message.chatId,
-      message.sender,
-      message.content || null,
-      message.tool_name || null,
-      message.createdAt,
-    ];
-    await pool.query(queryText, values);
+
+    if (
+      message instanceof HumanMessage ||
+      message instanceof AIMessage ||
+      message instanceof ToolMessage
+    ) {
+      await pool.query(query, [
+        "user",
+        JSON.stringify(message.toDict(), null, 2),
+        chatId,
+      ]);
+    } else {
+      throw new ErrorApi({
+        message: "Invalid message type",
+        status: 400,
+      });
+    }
   },
 
-  getMessagesByChatId: async (chatId: string): Promise<IMessage[]> => {
-    const queryText = `
-      SELECT id, chat_id, sender, content, tool_name, input, output, created_at
+  getMessagesByChatId: async (chatId: string): Promise<IMessageStored[]> => {
+    const query = `
+      SELECT *
       FROM messages
       WHERE chat_id = $1
       ORDER BY created_at ASC;
     `;
-    const result = await pool.query(queryText, [chatId]);
-    return result.rows;
+
+    const result = await pool.query(query, [chatId]);
+    const IMessageArray = result.rows;
+
+    return IMessageArray.map((message) => {
+      return {
+        chatId: message.chatId,
+        sender: message.sender,
+        content: mapStoredMessageToChatMessage(
+          message.content as StoredMessage
+        ),
+      };
+    });
   },
 
   getAllChatsByUserId: async (userId: string) => {
@@ -85,9 +115,9 @@ export const chatRepository = {
     const query = `
             DELETE FROM chats
             WHERE id = $1
-            RETURNING id
         `;
 
     const result = await pool.query(query, [id]);
+    return
   },
 };
