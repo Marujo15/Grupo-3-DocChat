@@ -3,6 +3,7 @@ import "./ChatHistoryCard.css";
 import { ChatHistoryCardProps } from "../../interfaces/ChatInterfaces.ts";
 import { useNavigate } from "react-router-dom";
 import { updateChatTitle, deleteChat } from "../../utils/chatApi.ts";
+import { useChat } from "../../context/ChatContext.tsx";
 
 const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, onEdit, onDelete }) => {
     const [editChatId, setEditChatId] = useState<string | null>(null);
@@ -12,6 +13,7 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
     const [chatToDelete, setChatToDelete] = useState<string | null>(null);
     const [showActionConfirmation, setShowActionConfirmation] = useState(false);
     const [actionMessage, setActionMessage] = useState("");
+    const chat = useChat();
 
     const navigate = useNavigate();
 
@@ -72,6 +74,7 @@ const ChatHistoryCard: React.FC<ChatHistoryCardProps> = ({ date, title, chatId, 
     };
 
     const handleCardClick = () => {
+        chat.setCurrentChatId(chatId);
         navigate(`/chat/${chatId}`);
     };
 

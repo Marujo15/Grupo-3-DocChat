@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getAllUrls } from "../../utils/urlApi";
 import { ChatAreaProps } from "../../interfaces/ChatInterfaces";
 import { Url } from "../../interfaces/UrlInterfaces";
-import { getAllChats } from "../../utils/chatApi";
+import { getAllChats, getMessagesByChatId } from "../../utils/chatApi";
 import { useChat } from "../../context/ChatContext";
 
 const ChatArea: React.FC<ChatAreaProps> = () => {
@@ -15,8 +15,19 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [urls, setUrls] = useState<Url[]>([]);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const { user } = useAuth();
   const chat = useChat();
+
+  useEffect(() => {
+    const fetchLastChatId = async () => {
+      const userChats = await getAllChats();
+      const lastChatId = userChats[userChats.length - 1].id;
+      chat.setCurrentChatId(lastChatId);
+    };
+
+    fetchLastChatId();
+  }, [user]);
 
   useEffect(() => {
     const fetchUrls = async () => {
@@ -32,6 +43,20 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
     fetchUrls();
   }, [user]);
 
+  useEffect(() => {
+    const fetchChatMessages = async () => {
+      if (chat.currentChatId) {
+        const messagesObj = await getMessagesByChatId(chat.currentChatId);
+        const messages = messagesObj.data;
+        setChatMessages(messages);
+      } else {
+        setChatMessages([]);
+      }
+    };
+
+    fetchChatMessages();
+  }, [chat.currentChatId]);
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -41,16 +66,7 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
   // Function to ask a question to the AI
   const handleAskQuestion = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    // Pega o id do último chat do usuário
-    const userChats = await getAllChats();
-    const lastChatId = userChats[userChats.length - 1].id;
-
-    // Adds the user question to the messages list
-    const userMessage: Message = { sender: "user", text: question, created_at: new Date(), chatId: lastChatId };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setQuestion("");
-
+    console.log("antes da requisição")
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -62,12 +78,15 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ message: question, chatId: lastChatId }),
+        body: JSON.stringify({ message: question, chatId: chat.currentChatId }),
       });
 
       if (!response.ok || !response.body) {
         throw new Error(`Erro na requisição: ${response.statusText}`);
       }
+      console.log("depois da requisição")
+
+      setQuestion("");
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -84,71 +103,84 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
         }
       }
 
-      // Atualiza a última mensagem com o texto acumulado
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "ai", text: accumulatedMessage, created_at: new Date(), chatId: lastChatId }
-      ]);
+      //   // Atualiza a última mensagem com o texto acumulado
+      //   setMessages((prevMessages) => [
+      //     ...prevMessages,
+      //     { sender: "ai", text: accumulatedMessage, created_at: new Date(), chatId: lastChatId }
+      //   ]);
+      // } catch (error) {
+      //   console.error("Erro ao fazer a requisição:", error);
+      // }
     } catch (error) {
-      console.error("Erro ao fazer a requisição:", error);
+      console.error("Error when making the request:", error);
     }
   };
 
   // Ordena as mensagens pelo campo created_at
-  const sortedMessages = [...messages].sort((a, b) => a.created_at.getTime() - b.created_at.getTime());
+  // const sortedMessages = [...messages].sort((a, b) => a.created_at.getTime() - b.created_at.getTime());
 
-    return (
-        <div className="chat-area">
-                <div className="dropdown-container">
-                    <button className="dropdown-button" onClick={toggleDropdown}>
-                        {isDropdownOpen ? "Esconder URLs carregadas" : "Mostrar URLs carregdas"}
-                    </button>
-                    {isDropdownOpen && (
-                        urls.length > 0 ? (
-                            <ul className="dropdown-list">
-                                {urls.map((url, index) => (
-                                    <li key={index} className="dropdown-item">
-                                        {`${url}`}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>Nenhuma URL carregada! Para carregar url's vá para a <a href={isLoggedIn ? "/user" : "/login"}>Área do usuário</a>.</p>
-                        )
-                    )}
-                </div>
-                {/* Chat area */}
-                {/* { messages.length === 0 ? ( */}
-                    {/* <></> */}
-                {/* ) : ( */}
-                    <div className="chat-messages">
-                        {sortedMessages.map((msg, index) => (
-                            <div key={index} className={`message ${msg.sender}`}>
-                                <div className={`bubble ${msg.sender}`}>
-                                    <p>{msg.text}</p>
-                                </div>
-                            </div>
-                        ))}
-                {/* Form to send questions */}
-                <form onSubmit={handleAskQuestion} className="input-button-container">
-                    <div className="input-with-button">
-                        <Input
-                            value={question}
-                            onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setQuestion(e.target.value)}
-                            placeholder="Como posso ajudar?"
-                            className="user-input"
-                            id="ask-input"
-                        />
-                        <Button type="submit" id="ask-button" className="ask-button" onClick={() => {}}>
-                            Perguntar
-                        </Button>
-                    </div>
-                </form>
-                    </div>
-                {/* )} */}
-
-        </div>
-    );
+  return (
+    <div className="chat-area">
+      <div className="dropdown-container">
+        <button className="dropdown-button" onClick={toggleDropdown}>
+          {isDropdownOpen
+            ? "Esconder URLs carregadas"
+            : "Mostrar URLs carregdas"}
+        </button>
+        {isDropdownOpen &&
+          (urls.length > 0 ? (
+            <ul className="dropdown-list">
+              {urls.map((url, index) => (
+                <li key={index} className="dropdown-item">
+                  {`${url}`}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>
+              Nenhuma URL carregada! Para carregar url's vá para a{" "}
+              <a href={isLoggedIn ? "/user" : "/login"}>Área do usuário</a>.
+            </p>
+          ))}
+      </div>
+      {/* Chat area */}
+      {/* { messages.length === 0 ? ( */}
+      {/* <></> */}
+      {/* ) : ( */}
+      <div className="chat-messages">
+        {chatMessages.map((msg, index) => (
+          <div key={index} className={`message ${msg.sender}`}>
+            <div className={`bubble ${msg.sender}`}>
+              <p>{msg.content}</p>
+            </div>
+          </div>
+        ))}
+        {/* Form to send questions */}
+        <form onSubmit={handleAskQuestion} className="input-button-container">
+          <div className="input-with-button">
+            <Input
+              value={question}
+              onChange={(e: {
+                target: { value: React.SetStateAction<string> };
+              }) => setQuestion(e.target.value)}
+              placeholder="Como posso ajudar?"
+              className="user-input"
+              id="ask-input"
+            />
+            <Button
+              type="submit"
+              id="ask-button"
+              className="ask-button"
+              onClick={() => {}}
+            >
+              Perguntar
+            </Button>
+          </div>
+        </form>
+      </div>
+      {/* )} */}
+    </div>
+  );
 };
 
 export default ChatArea;
