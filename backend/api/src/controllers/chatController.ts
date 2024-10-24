@@ -150,8 +150,6 @@ export const chatController = {
     // Implementar se necessário
   },
 
-};
-
 // sendMessage: async (req: Request, res: Response) => {
 //   const response: IAPIResponse<string> = { success: false };
 //   const { message, chatId } = req.body;

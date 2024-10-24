@@ -3,7 +3,6 @@
     display: flex;
     justify-content: space-between;
     max-width: 1260px;
-    padding: 1rem;
     position: relative;
     width: 78vw;
 }

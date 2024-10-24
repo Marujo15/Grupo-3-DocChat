@@ -3,9 +3,9 @@ import ChatHistoryCard from "../ChatHistoryCard/ChatHistoryCard";
 import CarouselButton from "../CarouselButton/CarouselButton";
 import { ChatCard } from "../../interfaces/ChatInterfaces";
 import { CarouselProps } from "../../interfaces/CarouselInterfaces";
-import { useChat } from "../../context/ChatContext";
 import { getAllChats } from "../../utils/chatApi";
 import { formatDate } from "../../utils/formatDate";
+import { useChat } from "../../context/ChatContext";
 import "./Carousel.css";
 import { useAuth } from "../../context/AuthContext";
 

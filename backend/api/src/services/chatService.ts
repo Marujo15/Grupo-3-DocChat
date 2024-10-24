@@ -175,18 +175,12 @@ export const chatServices = {
 
     const llmWithTools = llm.bindTools(tools);
 
-    console.log("antes de salvar");
     await chatRepository.saveMessage(new HumanMessage(message), chatId);
-    console.log("depois de salvar");
 
     const chatHistoryFromDatabase: IMessageStored[] =
       await chatRepository.getMessagesByChatId(chatId);
 
-    console.log("aqui 1");
-
     const prompt: SystemMessage = new SystemMessage(SYSTEM_PROMPT);
-
-    console.log("aqui 2");
 
     const chatHistory: (HumanMessage | AIMessage | ToolMessage)[] =
       chatHistoryFromDatabase.map((messageFromDatabase) => {
@@ -206,23 +200,14 @@ export const chatServices = {
         }
       });
 
-    console.log("aqui 3");
-
     chatHistory.unshift(prompt);
 
-    console.log("aqui 4");
-
     const aiMessage: AIMessageChunk = await llmWithTools.invoke(chatHistory);
-
-    console.log("aqui 5");
+      
     // salvar no banco o aiMessage
     await chatRepository.saveMessage(aiMessage, chatId);
 
-    console.log("aqui 6");
-
     chatHistory.push(aiMessage);
-
-    console.log("aqui 7");
 
     const toolsByName = {
       getTheFiveMostRelevantPages: docTool,
@@ -243,11 +228,7 @@ export const chatServices = {
       }
     }
 
-    console.log("aqui 9");
-
     const stream = await llm.stream(chatHistory);
-
-    console.log("aqui 10");
 
     for await (const chunk of stream) {
       yield chunk.content;
