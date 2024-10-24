@@ -41,13 +41,21 @@ export const chatRepository = {
       INSERT INTO messages (sender, content, chat_id) VALUES ($1, $2, $3)
     `;
 
-    if (
-      message instanceof HumanMessage ||
-      message instanceof AIMessage ||
-      message instanceof ToolMessage
-    ) {
+    if (message instanceof HumanMessage) {
       await pool.query(query, [
         "user",
+        JSON.stringify(message.toDict(), null, 2),
+        chatId,
+      ]);
+    } else if (message instanceof ToolMessage) {
+      await pool.query(query, [
+        "tool_message",
+        JSON.stringify(message.toDict(), null, 2),
+        chatId,
+      ]);
+    } else if (message instanceof AIMessage) {
+      await pool.query(query, [
+        "ia",
         JSON.stringify(message.toDict(), null, 2),
         chatId,
       ]);
@@ -118,6 +126,6 @@ export const chatRepository = {
         `;
 
     const result = await pool.query(query, [id]);
-    return
+    return;
   },
 };
