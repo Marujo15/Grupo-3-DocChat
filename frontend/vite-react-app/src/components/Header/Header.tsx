@@ -18,6 +18,8 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
 
   const handleLogout = () => {
     logout();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/login");
   };
 

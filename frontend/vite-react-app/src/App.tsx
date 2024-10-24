@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ChatProvider } from "./context/ChatContext";
 import Header from "./components/Header/Header";
@@ -23,6 +23,9 @@ const MainPage: React.FC = () => {
 
 const UserProfilePage: React.FC = () => {
   const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
   return (
     <>
       <UserPage userId={user ? user.id : ""} />

@@ -46,6 +46,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       });
 
       setUser(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     } catch (error) {
       console.error("Error logging out:", error);
       return;

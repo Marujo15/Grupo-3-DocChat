@@ -43,7 +43,6 @@ const UserPage: React.FC<UserPageProps> = () => {
         const fetchUrls = async () => {
             try {
                 const data = await getAllUrls();
-                console.log("data:", data);
                 setUrls(data);
             } catch (error) {
                 console.error("Error when making the request:", error);
