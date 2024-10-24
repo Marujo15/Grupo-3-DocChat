@@ -1,0 +1,72 @@
+.login-container {
+    align-items: center;
+    background-color: rgba(36, 36, 36, 0.4);
+    border-radius: 2rem;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+    height: 60vh;
+    justify-content: center;
+    margin-top: 10vh;
+    min-width: 720px;
+    width: 50vw;
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-container input {
+    background-color: transparent;
+    border-bottom: 1px solid #8A8A8A;
+    border-radius: 0;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    width: 300px;
+}
+
+.login-container button {
+    padding: 0.5rem;
+    background-color: #10A37F;
+    border: none;
+    cursor: pointer;
+}
+
+.password-container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
+}
+
+.password-input {
+    padding-right: 30px;
+}
+
+.toggle-password {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    margin-left: -20px;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.error-message {
+    align-items: center;
+    background-color: lightcoral;
+    border-radius: 20px;
+    bottom: 30px;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 10px;
+    position: absolute;
+    right: 20px;
+    padding: 10px 30px;
+}

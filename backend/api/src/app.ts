@@ -1,17 +1,18 @@
-import express, { Application } from "express";
 import dotenv from "dotenv";
+import { CORS_ORIGIN } from "./config";
+import express, { Application } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import testRoutes from "./routes/testRoutes";
-import scrapeRoutes from "./routes/scrapeRoutes";
+import routes from "./routes/routes";
+import { pool } from "./database/database";
 
 dotenv.config();
 
-console.log("Origem do CORS:", process.env.CORS_ORIGIN);
+console.log("CORS Origin:", CORS_ORIGIN);
 
 const app: Application = express();
 
-const corsOrigin: string = process.env.CORS_ORIGIN || "*";
+const corsOrigin: string = CORS_ORIGIN || "*";
 
 app.use(
   cors({
@@ -23,7 +24,16 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/test", testRoutes);
-app.use("/api/scrape", scrapeRoutes);
+app.use("/api", routes);
+
+export const startServer = async () => {
+  try {
+    await pool.connect();
+    console.log("Database connection established");
+  } catch (error) {
+    console.error("Error initializing database:", error);
+    process.exit(1);
+  }
+};
 
 export default app;

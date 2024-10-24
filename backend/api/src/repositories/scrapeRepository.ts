@@ -1,39 +1,127 @@
-import https from 'https';
-import http from 'http';
-import * as cheerio from 'cheerio';
+import https from "https";
+import http from "http";
+import * as cheerio from "cheerio";
+import TurndownService from "turndown";
+import { URL } from "url";
+import { PageInfo } from "../interfaces/PageInfo";
 
-export const fetchHtml = (url: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const protocol = url.startsWith('https') ? https : http;
-    protocol.get(url, (response) => {
-      let data = '';
-      response.on('data', (chunk) => {
-        data += chunk;
-      });
-      response.on('end', () => {
-        resolve(data);
-      });
-      response.on('error', (err) => {
-        reject(err);
+export const scrapeRepository = {
+  fetchHtml: (url: string, retries: number = 3): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const protocol = url.startsWith("https") ? https : http;
+
+      const handleResponse = (response: http.IncomingMessage) => {
+        let data = "";
+
+        if (response.statusCode === 301 || response.statusCode === 302) {
+          const newUrl = response.headers.location;
+          if (newUrl) {
+            scrapeRepository
+              .fetchHtml(newUrl, retries)
+              .then(resolve)
+              .catch(reject);
+          } else {
+            reject(new Error(`Failed to follow redirect, no location header`));
+          }
+        } else if (response.statusCode === 200) {
+          response.on("data", (chunk: string) => {
+            data += chunk;
+          });
+
+          response.on("end", () => {
+            resolve(data);
+          });
+        } else {
+          reject(
+            new Error(
+              `Failed to load page, status code: ${response.statusCode}`
+            )
+          );
+        }
+      };
+
+      const request = protocol.get(url, handleResponse);
+
+      request.on("error", (err) => {
+        if (
+          retries > 0 &&
+          ((err as NodeJS.ErrnoException).code === "ECONNRESET" ||
+            (err as NodeJS.ErrnoException).code === "ETIMEDOUT")
+        ) {
+          console.warn(`Retrying ${url} (${retries} retries left)`);
+          setTimeout(() => {
+            scrapeRepository
+              .fetchHtml(url, retries - 1)
+              .then(resolve)
+              .catch(reject);
+          }, 1000);
+        } else {
+          reject(err);
+        }
       });
     });
-  });
+  },
+
+  extractLinks: (
+    html: string,
+    baseUrl: string,
+    visited: Set<string>
+  ): string[] => {
+    const $ = cheerio.load(html);
+    const links: string[] = [];
+
+    $("a").each((_, element) => {
+      let href = $(element).attr("href");
+      if (href) {
+        const absoluteUrl = new URL(href, baseUrl).href;
+        if (absoluteUrl.startsWith(baseUrl) && !visited.has(absoluteUrl)) {
+          links.push(absoluteUrl);
+        }
+      }
+    });
+
+    return links;
+  },
+
+  processPage: async (
+    url: string,
+    visited: Set<string>
+  ): Promise<PageInfo[]> => {
+
+    if (visited.has(url)) {
+      return [];
+    }
+    
+    visited.add(url);
+
+    try {
+      const html = await scrapeRepository.fetchHtml(url);
+
+      console.log(`Fetched HTML for ${url}:`, html.substring(0, 100)); // Log the first 100 characters of the HTML for debugging
+
+      const turndownService = new TurndownService();
+
+      const markdown = turndownService.turndown(html);
+
+      const links = scrapeRepository.extractLinks(html, url, visited);
+
+      const pageInfo: PageInfo = { url, html: markdown, links };
+
+      const results: PageInfo[] = [pageInfo];
+
+      // Process links in parallel
+      const subPagePromises = links.map((link) =>
+        scrapeRepository.processPage(link, visited)
+      );
+
+      const subPageResults = await Promise.all(subPagePromises);
+
+      subPageResults.forEach((subPageInfo) => results.push(...subPageInfo));
+
+      return results;
+    } catch (error) {
+      console.error(`Error processing page ${url}:`, error);
+      return [];
+    }
+  },
 };
-
-interface ParagraphInfo {
-  text: string;
-}
-
-const extractParagraphs = (html: string): ParagraphInfo[] => {
-  const $ = cheerio.load(html);
-  const paragraphs: ParagraphInfo[] = [];
-
-  $('p').each((_: number, element: cheerio.Element) => {
-    const text = $(element).text().trim();
-    paragraphs.push({ text });
-  });
-
-  return paragraphs;
-};
-
-export default { fetchHtml, extractParagraphs };
