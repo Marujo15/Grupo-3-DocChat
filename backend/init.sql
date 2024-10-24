@@ -21,10 +21,9 @@ CREATE TABLE IF NOT EXISTS chats (
 CREATE TABLE messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     chat_id UUID REFERENCES chats(id),
-    sender VARCHAR(20) CHECK (sender IN ('user', 'ia', 'system', 'tool_call', 'tool_message')) NOT NULL,
-    content TEXT,
-    tool_name VARCHAR(100),
-    created_at TIMESTAMP NOT NULL
+    sender VARCHAR(20) CHECK (sender IN ('user', 'ia', 'tool_message')) NOT NULL,
+    content JSON,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS urls (

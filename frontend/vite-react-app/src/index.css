@@ -61,7 +61,7 @@ html, body {
 body {
   align-items: center;
   background-color: #0b0b0b;
-  background-image: url('../public/images/background2.jpg');
+  background-image: url('/images/background2.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ChatCard } from "../../interfaces/ChatInterfaces";
-import { Url } from "../../interfaces/UrlInterfaces.ts";
 import { UserPageProps } from "../../interfaces/UserPageinterfaces.ts";
 import Button from "../Button/Button";
 import Header from "../Header/Header";
 import Input from "../Input/Input";
-import { deleteChat, getAllChats, updateChatTitle } from "../../utils/chatApi.ts";
-import { deleteUrl, getAllUrls } from "../../utils/urlApi.ts";
+import {
+  deleteChat,
+  getAllChats,
+  updateChatTitle,
+} from "../../utils/chatApi.ts";
+import { deleteUrl, getAllUrls, saveUrl } from "../../utils/urlApi.ts";
 import { formatDate } from "../../utils/formatDate.ts";
 import { getUserData } from "../../utils/getUserData";
 import "./UserPage.css";
@@ -43,7 +46,6 @@ const UserPage: React.FC<UserPageProps> = () => {
         const fetchUrls = async () => {
             try {
                 const data = await getAllUrls();
-                console.log("data:", data);
                 setUrls(data);
             } catch (error) {
                 console.error("Error when making the request:", error);
@@ -62,12 +64,12 @@ const UserPage: React.FC<UserPageProps> = () => {
             }
         };
 
-        fetchUserData();
-    }, []);
+    fetchUserData();
+  }, []);
 
-    // Function to scrape the URL and load the data
-    const handleScrape = async (event: React.FormEvent) => {
-        event.preventDefault();
+  // Function to scrape the URL and load the data
+  const handleScrape = async (event: React.FormEvent) => {
+    event.preventDefault();
 
         // Check if the URL is already loaded
         urls.forEach((loadedUrl) => {
@@ -80,14 +82,22 @@ const UserPage: React.FC<UserPageProps> = () => {
             }
         })
 
-        setUrl("");
+    setUrl("");
 
-        await getAllUrls();
+    setIsLoading(true);
+    setButtonText("Carregando...");
+    setErrorMessage("");
 
-        setIsLoading(true);
-        setButtonText("Carregando...");
-        setErrorMessage("");
-    };
+    await saveUrl(url);
+
+    setIsLoading(false);
+    setButtonText("Dados Carregados");
+    setErrorMessage("");
+
+    setTimeout(() => {
+      setButtonText("Carregar dados");
+    }, 3000);
+  };
 
     const handleDeleteUrl = (url: string) => {
         setDeleteType("url");
@@ -103,8 +113,6 @@ const UserPage: React.FC<UserPageProps> = () => {
 
     
     const handleConfirmDelete = async (itemToDelete: string) => {
-        console.log("itemToDelete:", itemToDelete);
-        console.log("deleteType:", deleteType);
             if (deleteType === "url" && itemToDelete) {
                 try {
                     await deleteUrl(itemToDelete);
@@ -146,16 +154,14 @@ const UserPage: React.FC<UserPageProps> = () => {
     };
 
     const handleCancelDelete = () => {
-        console.log("itemToDelete:", itemToDelete);
-        console.log("deleteType:", deleteType);
         setShowModal(false);
         setItemToDelete(null);
     };
 
-    const handleEditChat = (chatId: string, title: string) => {
-        setEditChatId(chatId);
-        setNewChatName(title);
-    };
+  const handleEditChat = (chatId: string, title: string) => {
+    setEditChatId(chatId);
+    setNewChatName(title);
+  };
 
     const handleSaveChatName = async (chatId: string) => {
         try {
@@ -266,20 +272,26 @@ const UserPage: React.FC<UserPageProps> = () => {
                     </div>
                 )}
 
-                {showModal && (
-                    <div className="modal">
-                        <div className="modal-content">
-                            <p>Tem certeza de que deseja deletar este chat?</p>
-                            <div id="user-choices-div">
-                                <button onClick={() => itemToDelete && handleConfirmDelete(itemToDelete)}>Sim</button>
-                                <button onClick={handleCancelDelete}>Não</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+        {showModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <p>Tem certeza de que deseja deletar este chat?</p>
+              <div id="user-choices-div">
+                <button
+                  onClick={() =>
+                    itemToDelete && handleConfirmDelete(itemToDelete)
+                  }
+                >
+                  Sim
+                </button>
+                <button onClick={handleCancelDelete}>Não</button>
+              </div>
             </div>
-        </>
-    );
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default UserPage;

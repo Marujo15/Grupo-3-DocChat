@@ -1,4 +1,6 @@
 export interface Message {
     sender: "user" | "ai";
-    text: string;
+    content: string;
+    created_at: Date;
+    chatId: string;
 }

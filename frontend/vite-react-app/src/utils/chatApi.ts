@@ -88,3 +88,25 @@ export const updateChatTitle = async (chatId: string, newTitle: string): Promise
         throw error;
     }
 };
+
+export const getMessagesByChatId = async (chatId: string) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/${chatId}`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Request Error: ${response.statusText}`);
+        }
+
+        const messages = await response.json();
+        return messages;
+    } catch (error) {
+        console.error("Error when making the request:", error);
+        return [];
+    }
+}
