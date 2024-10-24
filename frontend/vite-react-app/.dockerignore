@@ -60,3 +60,6 @@ docker-compose.dev.yml
 # Ignorar arquivos estáticos não necessários
 public/
 **/public/
+
+.env.db
+.env.api
