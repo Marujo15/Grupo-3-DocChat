@@ -5,9 +5,10 @@ const UrlInput: React.FC = () => {
     const [url, setUrl] = useState("");
 
     const handleSubmit = async (event: React.FormEvent) => {
+        const apiUrl = import.meta.env.VITE_API_URL;
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:5000/scrape", {
+            const response = await fetch(`${apiUrl}/scrape`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

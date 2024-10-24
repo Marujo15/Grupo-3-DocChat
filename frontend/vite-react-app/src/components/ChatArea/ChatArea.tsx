@@ -10,6 +10,7 @@ import { Url } from "../../interfaces/UrlInterfaces";
 import { getAllChats } from "../../utils/chatApi";
 
 const ChatArea: React.FC<ChatAreaProps> = () => {
+    const apiUrl = import.meta.env.VITE_API_URL;
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -49,7 +50,7 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
         setQuestion("Como posso ajudar?");
 
         try {
-            const response = await fetch("http://localhost:3000/api/chat", {
+            const response = await fetch(`${apiUrl}/api/chat`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

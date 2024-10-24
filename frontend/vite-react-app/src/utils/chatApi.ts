@@ -1,6 +1,6 @@
 import { ChatCard } from "../interfaces/ChatInterfaces";
 
-const API_BASE_URL = "http://localhost:3000/api/chat";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const getAllChats = async (): Promise<ChatCard[]> => {
     try {
@@ -9,7 +9,7 @@ export const getAllChats = async (): Promise<ChatCard[]> => {
             console.error("Token not found. Redirecting to Login Page.");
             return [];
         }
-        const response = await fetch(`${API_BASE_URL}`, {
+        const response = await fetch(`${apiUrl}/api/chat`, {
             method: "GET",
             credentials: "include",
             headers: {
@@ -31,8 +31,9 @@ export const getAllChats = async (): Promise<ChatCard[]> => {
 };
 
 export const createNewChat = async () => {
+
     try {
-        const response = await fetch(`${API_BASE_URL}/create`, {
+        const response = await fetch(`${apiUrl}/api/chat/create`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -52,7 +53,7 @@ export const createNewChat = async () => {
 }
 
 export const deleteChat = async (chatId: string): Promise<ChatCard[]> => {
-    const response = await fetch(`${API_BASE_URL}/${chatId}`, {
+    const response = await fetch(`${apiUrl}/api/chat/${chatId}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -69,7 +70,7 @@ export const deleteChat = async (chatId: string): Promise<ChatCard[]> => {
 
 export const updateChatTitle = async (chatId: string, newTitle: string): Promise<ChatCard[]> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/${chatId}`, {
+        const response = await fetch(`${apiUrl}/api/chat/${chatId}`, {
             method: "PATCH",
             credentials: "include",
             headers: {

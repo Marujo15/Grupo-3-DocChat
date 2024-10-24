@@ -1,9 +1,10 @@
 export const getUserData = async (): Promise<{ userName: string } | null> => {
+    const apiUrl = import.meta.env.VITE_API_URL;
     const token = localStorage.getItem("authToken");
     if (!token) return null;
 
     try {
-        const response = await fetch("http://localhost:3000/api/auth/user", {
+        const response = await fetch(`${apiUrl}/api/auth/user`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,

@@ -6,6 +6,7 @@ import "./Login.css";
 import { createNewChat, getAllChats } from "../../utils/chatApi";
 
 const Login: React.FC = () => {
+    const apiUrl = import.meta.env.VITE_API_URL;
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +17,7 @@ const Login: React.FC = () => {
     const handleLogin = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:3000/api/auth/login", {
+            const response = await fetch(`${apiUrl}/api/auth/login`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

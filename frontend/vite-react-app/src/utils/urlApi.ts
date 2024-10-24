@@ -1,6 +1,6 @@
 import { Url } from "../interfaces/UrlInterfaces";
 
-const API_BASE_URL = "http://localhost:3000/api/url";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const getAllUrls = async (): Promise<Url[]> => {
     try {
@@ -9,7 +9,7 @@ export const getAllUrls = async (): Promise<Url[]> => {
             console.error("Token not found. Redirecting to Login Page.");
             return [];
         }
-        const response = await fetch(`${API_BASE_URL}/`, {
+        const response = await fetch(`${apiUrl}/api/url`, {
             method: "GET",
             credentials: "include",
             headers: {
@@ -31,7 +31,7 @@ export const getAllUrls = async (): Promise<Url[]> => {
 };
 
 export const deleteUrl = async (baseUrl: string): Promise<Url[]> => {
-    const response = await fetch(`${API_BASE_URL}`, {
+    const response = await fetch(`${apiUrl}/api/url`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -54,7 +54,7 @@ export const saveUrl = async (url: string): Promise<string> => {
             console.error("Token not found. Redirecting to Login Page.");
             return "";
         }
-        const response = await fetch(`${API_BASE_URL}/`, {
+        const response = await fetch(`${apiUrl}/api/url/`, {
             method: "POST",
             credentials: "include",
             headers: {
