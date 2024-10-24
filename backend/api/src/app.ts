@@ -8,11 +8,11 @@ import { pool } from "./database/database";
 
 dotenv.config();
 
-console.log("CORS Origin:", CORS_ORIGIN);
+console.log("CORS Origin:", process.env.CORS_ORIGIN);
 
 const app: Application = express();
 
-const corsOrigin: string = CORS_ORIGIN || "*";
+const corsOrigin: string = process.env.CORS_ORIGIN || "*";
 
 app.use(
   cors({

@@ -1,0 +1,59 @@
+services:
+  api:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    env_file:
+      - ./backend/api/.env.api
+    networks:
+      - network
+    depends_on:
+      - database
+
+  database:
+    image: pgvector/pgvector:pg16
+    restart: always
+    env_file:
+      - ./backend/.env.db
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - network
+
+  frontend:
+    build:
+      context: ./frontend/vite-react-app
+      dockerfile: Dockerfile.dev
+    environment:
+      - VITE_API_URL=http://208.167.252.106:3000
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - network
+    depends_on:
+      - api
+  
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - public_network
+
+networks:
+  network:
+    driver: bridge
+    internal: true
+  public_network:
+    driver: bridge
+
+volumes:
+  database:
