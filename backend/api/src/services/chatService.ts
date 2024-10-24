@@ -213,8 +213,6 @@ export const chatServices = {
       getTheFiveMostRelevantPages: docTool,
     };
 
-    console.log("aqui 8");
-
     if (!!aiMessage.tool_calls) {
       for (const toolCall of aiMessage.tool_calls) {
         const selectedTool =

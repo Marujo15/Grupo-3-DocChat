@@ -182,3 +182,4 @@ export const chatController = {
 //     return res.status(500).json({ error: "Erro ao processar a pergunta" });
 //   }
 // },
+}

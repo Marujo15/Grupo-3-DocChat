@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ChatCard } from "../../interfaces/ChatInterfaces";
-import { Url } from "../../interfaces/UrlInterfaces.ts";
 import { UserPageProps } from "../../interfaces/UserPageinterfaces.ts";
 import Button from "../Button/Button";
 import Header from "../Header/Header";
@@ -114,8 +113,6 @@ const UserPage: React.FC<UserPageProps> = () => {
 
     
     const handleConfirmDelete = async (itemToDelete: string) => {
-        console.log("itemToDelete:", itemToDelete);
-        console.log("deleteType:", deleteType);
             if (deleteType === "url" && itemToDelete) {
                 try {
                     await deleteUrl(itemToDelete);
@@ -157,8 +154,6 @@ const UserPage: React.FC<UserPageProps> = () => {
     };
 
     const handleCancelDelete = () => {
-        console.log("itemToDelete:", itemToDelete);
-        console.log("deleteType:", deleteType);
         setShowModal(false);
         setItemToDelete(null);
     };
