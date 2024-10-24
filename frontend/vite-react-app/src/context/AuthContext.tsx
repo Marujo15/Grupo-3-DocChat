@@ -19,27 +19,26 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
 
-  const handleSetUser = (user: User) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    setUser(user);
-  };
+    const handleSetUser = (user: User) => {
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
+    };
 
   const logout = async () => {
     try {
-      await fetch("localhost:3000/api/auth/logout", {
+      await fetch("http://localhost:3000/api/auth/logout", {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

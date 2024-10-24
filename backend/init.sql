@@ -23,7 +23,7 @@ CREATE TABLE messages (
     chat_id UUID REFERENCES chats(id),
     sender VARCHAR(20) CHECK (sender IN ('user', 'ia', 'tool_message')) NOT NULL,
     content JSON,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS urls (

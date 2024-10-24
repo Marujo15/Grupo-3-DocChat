@@ -6,14 +6,16 @@ import {
   ToolMessage,
   AIMessageChunk,
   SystemMessage,
+  mapStoredMessageToChatMessage,
 } from "@langchain/core/messages";
 import { z } from "zod";
 import { chatRepository } from "../repositories/chatRepository";
-import { IMessage } from "../interfaces/message";
+import { IMessage, IMessageStored } from "../interfaces/message";
 import { createSearchDocumentationTool } from "../utils/tools";
 import { OPENAI_API_KEY, SYSTEM_PROMPT } from "../config";
 import { tool } from "@langchain/core/tools";
 import { urlServices } from "./urlService";
+import { ErrorApi } from "../errors/ErrorApi";
 
 export const chatServices = {
   // handleChatRequest: async (
@@ -105,8 +107,27 @@ export const chatServices = {
   },
 
   getChatById: async (chatId: string): Promise<IMessage[]> => {
-    const result: IMessage[] = await chatRepository.getMessagesByChatId(chatId);
-    return result;
+    const storedMessages: IMessageStored[] =
+      await chatRepository.getMessagesByChatId(chatId);
+
+    const chat: IMessage[] = storedMessages
+      .filter((message) => message.sender === "ia" || message.sender === "user")
+      .map((message) => {
+        if (message.sender === "user") {
+          return {
+            chatId,
+            sender: "user",
+            content: `${message.content.content}`,
+          } as IMessage;
+        }
+        return {
+          chatId,
+          sender: "ia",
+          content: `${message.content.content}`,
+        } as IMessage;
+      });
+
+    return chat;
   },
 
   getAllChatsByUserId: async (userId: string) => {
@@ -156,42 +177,52 @@ export const chatServices = {
 
     await chatRepository.saveMessage(new HumanMessage(message), chatId);
 
-    const chatHistoryFromDatabase = await chatRepository.getMessagesByChatId(
-      chatId
-    );
+    const chatHistoryFromDatabase: IMessageStored[] =
+      await chatRepository.getMessagesByChatId(chatId);
 
     const prompt: SystemMessage = new SystemMessage(SYSTEM_PROMPT);
-    const chatHistory = chatHistoryFromDatabase.map((messageFromDatabase) => {
-      if (messageFromDatabase.sender === "user") {
-        return new HumanMessage(messageFromDatabase.content);
-      } else if (messageFromDatabase.sender === "ia") {
-        return new AIMessage(messageFromDatabase.content);
-      } else if (messageFromDatabase.sender === "tool_message") {
-        return new ToolMessage(messageFromDatabase.content);
-      } else {
-        throw new Error(
-          "Não é um tipo de mensagem conhecido, acho que isso é impossível"
-        );
-      }
-    });
 
-    chatHistory.unshift(prompt)
+    const chatHistory: (HumanMessage | AIMessage | ToolMessage)[] =
+      chatHistoryFromDatabase.map((messageFromDatabase) => {
+        const content = messageFromDatabase.content;
+
+        if (messageFromDatabase.sender === "user") {
+          return new HumanMessage(content as HumanMessage);
+        } else if (messageFromDatabase.sender === "ia") {
+          return new AIMessage(content as AIMessage);
+        } else if (messageFromDatabase.sender === "tool_message") {
+          return new ToolMessage(content as ToolMessage);
+        } else {
+          throw new ErrorApi({
+            message: "Failed to send message to database",
+            status: 500,
+          });
+        }
+      });
+
+    chatHistory.unshift(prompt);
 
     const aiMessage: AIMessageChunk = await llmWithTools.invoke(chatHistory);
+      
     // salvar no banco o aiMessage
     await chatRepository.saveMessage(aiMessage, chatId);
+
     chatHistory.push(aiMessage);
 
     const toolsByName = {
       getTheFiveMostRelevantPages: docTool,
     };
 
+    console.log("aqui 8");
+
     if (!!aiMessage.tool_calls) {
       for (const toolCall of aiMessage.tool_calls) {
         const selectedTool =
           toolsByName[toolCall.name as keyof typeof toolsByName];
+
         const toolMessage: ToolMessage = await selectedTool.invoke(toolCall);
-        chatHistory.push(toolMessage)
+
+        chatHistory.push(toolMessage);
 
         await chatRepository.saveMessage(toolMessage, chatId);
       }

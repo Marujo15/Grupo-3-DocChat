@@ -1,9 +1,5 @@
-import { Router, Request, Response } from "express";
-import { ChatOpenAI } from "@langchain/openai";
-import { HumanMessage } from "@langchain/core/messages";
-import { OPENAI_API_KEY } from "../config";
+import { Router } from "express";
 import { chatController } from "../controllers/chatController";
-import { urlServices } from "../services/urlService";
 import { authenticateJWT } from "../middlewares/auth";
 
 const router = Router();

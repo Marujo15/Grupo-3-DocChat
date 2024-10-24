@@ -8,6 +8,7 @@ import { getAllUrls } from "../../utils/urlApi";
 import { ChatAreaProps } from "../../interfaces/ChatInterfaces";
 import { Url } from "../../interfaces/UrlInterfaces";
 import { getAllChats } from "../../utils/chatApi";
+import { useChat } from "../../context/ChatContext";
 
 const ChatArea: React.FC<ChatAreaProps> = () => {
   const [question, setQuestion] = useState("");
@@ -15,6 +16,7 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [urls, setUrls] = useState<Url[]>([]);
   const { user } = useAuth();
+  const chat = useChat();
 
   useEffect(() => {
     const fetchUrls = async () => {
@@ -87,7 +89,6 @@ const ChatArea: React.FC<ChatAreaProps> = () => {
         ...prevMessages,
         { sender: "ai", text: accumulatedMessage, created_at: new Date(), chatId: lastChatId }
       ]);
-
     } catch (error) {
       console.error("Erro ao fazer a requisição:", error);
     }

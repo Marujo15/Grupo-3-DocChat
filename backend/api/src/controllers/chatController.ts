@@ -14,8 +14,8 @@ export const chatController = {
       return;
     }
 
-    res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Transfer-Encoding', 'chunked');
+    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Transfer-Encoding", "chunked");
 
     try {
       const result = chatServices.sendMessage(userId, chatId, message);
@@ -130,7 +130,7 @@ export const chatController = {
         return;
       }
 
-      const result = await chatServices.deleteChat(chatId);
+      await chatServices.deleteChat(chatId);
 
       response.success = true;
       response.message = "Chat deleted";
@@ -150,40 +150,35 @@ export const chatController = {
     // Implementar se necessário
   },
 
-  // sendMessage: async (req: Request, res: Response) => {
-  //   const response: IAPIResponse<string> = { success: false };
-  //   const { message, chatId } = req.body;
-  //   const userId = req.user;
+// sendMessage: async (req: Request, res: Response) => {
+//   const response: IAPIResponse<string> = { success: false };
+//   const { message, chatId } = req.body;
+//   const userId = req.user;
 
-  //   if (!userId) {
-  //     res.status(401).json({ error: "Usuário não autenticado" });
-  //     return;
-  //   }
+//   if (!userId) {
+//     res.status(401).json({ error: "Usuário não autenticado" });
+//     return;
+//   }
 
-  //   if (!chatId) {
-  //     res.status(400).json({ error: "Chat ID não fornecido" });
-  //     return;
-  //   }
+//   if (!chatId) {
+//     res.status(400).json({ error: "Chat ID não fornecido" });
+//     return;
+//   }
 
-  //   if (!message) {
-  //     res.status(400).json({ error: "Mensagem não fornecida" });
-  //     return;
-  //   }
+//   if (!message) {
+//     res.status(400).json({ error: "Mensagem não fornecida" });
+//     return;
+//   }
 
-  //   try {
-  //     const result: string = await chatServices.sendMessage(
-  //       userId,
-  //       chatId,
-  //       message
-  //     );
+//   try {
+//     const result = chatServices.sendMessage(userId, chatId, message);
 
-  //     response.success = true;
-  //     response.message = result;
+//     response.success = true;
+//     response.message = result;
 
-  //     return res.json({ response });
-  //   } catch (error) {
-  //     console.error("Erro ao processar a pergunta:", error);
-  //     return res.status(500).json({ error: "Erro ao processar a pergunta" });
-  //   }
-  // },
-};
+//     return res.json({ response });
+//   } catch (error) {
+//     console.error("Erro ao processar a pergunta:", error);
+//     return res.status(500).json({ error: "Erro ao processar a pergunta" });
+//   }
+// },

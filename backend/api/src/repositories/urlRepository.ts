@@ -5,10 +5,10 @@ import { IUrl, IVector } from "../interfaces/url";
 export const urlRepository = {
   getUrlsByUserId: async (userId: string): Promise<string[]> => {
     const query = `
-        SELECT u.base_url
-        FROM users_urls uu
-        JOIN urls u ON uu.url_id = u.id
-        WHERE uu.user_id = $1;
+      SELECT u.base_url
+      FROM users_urls uu
+      JOIN urls u ON uu.url_id = u.id
+      WHERE uu.user_id = $1;
     `;
 
     try {
@@ -52,9 +52,9 @@ export const urlRepository = {
       const result = await pool.query(query, values);
       return result.rows.map((row) => row.id);
     } catch (error) {
-      console.error('Error saving URLs:', error);
+      console.error("Error saving URLs:", error);
       throw new ErrorApi({
-        message: 'Failed to save user URLs.',
+        message: "Failed to save user URLs.",
         status: 500,
       });
     }
@@ -95,36 +95,32 @@ export const urlRepository = {
     }
   },
 
-  syncIdsOnUsersUrls: async (
-    userId: string,
-    urlIds: string[]
-  ): Promise<void> => {
-    if (urlIds.length === 0) return;
+  // syncIdsOnUsersUrls: async (
+  //   userId: string,
+  //   urlIds: string[]
+  // ): Promise<void> => {
+  //   if (urlIds.length === 0) return;
 
-    const usersUrlsQuery = `
-      INSERT INTO users_urls (user_id, url_id)
-      VALUES ${urlIds.map((_, index) => `($1, $${index + 2})`).join(", ")}
-    `;
+  //   const query = `
+  //     INSERT INTO users_urls (user_id, url_id)
+  //     VALUES ${urlIds.map((_, index) => `($1, $${index + 2})`).join(", ")}
+  //   `;
 
-    const values = [
-      vector.id,
-      vector.urlId,
-      vector.baseUrl,
-      vector.content,
-      vector.vector,
-    ];
+  //   const values: string[] = [userId, ...urlIds.map((url) => url)];
 
-    try {
-      await pool.query(query, values);
-    } catch (error) {
-      console.error('Error saving vector:', error);
-      throw new ErrorApi({
-        message: 'Failed to save vector.',
-        status: 500,
-      });
-    }
-  },
-    
+  //   try {
+  //     await pool.query(query, values);
+
+  //     return;
+  //   } catch (error) {
+  //     console.error("Error saving vector:", error);
+  //     throw new ErrorApi({
+  //       message: "Failed to save vector.",
+  //       status: 500,
+  //     });
+  //   }
+  // },
+
   removeUrlsByBaseUrl: async (
     userId: string,
     baseUrl: string
@@ -202,11 +198,16 @@ export const urlRepository = {
       throw new Error("Não foi possível remover e buscar as URLs");
     }
   },
-    
-  syncIdsOnUsersUrls: async (userId: string, urlIds: string[]): Promise<void> => {
+
+  syncIdsOnUsersUrls: async (
+    userId: string,
+    urlIds: string[]
+  ): Promise<void> => {
     if (urlIds.length === 0) return;
 
-    const valuesPlaceholders = urlIds.map((_, index) => `($1, $${index + 2})`).join(', ');
+    const valuesPlaceholders = urlIds
+      .map((_, index) => `($1, $${index + 2})`)
+      .join(", ");
 
     const usersUrlsQuery = `
       INSERT INTO users_urls (user_id, url_id)
@@ -218,9 +219,9 @@ export const urlRepository = {
     try {
       await pool.query(usersUrlsQuery, usersUrlsValues);
     } catch (error) {
-      console.error('Error syncing IDs on users_urls:', error);
+      console.error("Error syncing IDs on users_urls:", error);
       throw new ErrorApi({
-        message: 'Failed to sync user URLs.',
+        message: "Failed to sync user URLs.",
         status: 500,
       });
     }

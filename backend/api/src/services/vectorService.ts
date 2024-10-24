@@ -13,7 +13,7 @@ export const vectorServices = {
       return embed;
     } catch (err: any) {
       console.error(
-        `Erro ao gerar embedding da string fornecida: ${err.message}`
+        `Error while vectorizing text: ${text}\nError: ${err.message}`
       );
       throw err;
     }
@@ -21,9 +21,11 @@ export const vectorServices = {
 
   splitIntoChunks: (content: string, chunkSize: number = 10000): string[] => {
     const chunks: string[] = [];
+
     for (let i = 0; i < content.length; i += chunkSize) {
       chunks.push(content.substring(i, i + chunkSize));
     }
+
     return chunks;
   },
 };
