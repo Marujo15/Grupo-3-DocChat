@@ -47,15 +47,22 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
               </button>
               <div id="login-register-div">
                 {isAuthenticated() ? (
-                  <button
-                    className="user-area-button"
-                    onClick={() => navigate("/user")}
-                  >
-                    Área do usuário
-                  </button>
+                  <div className="header-buttons">
+                    <div className="right-buttons">
+                      <button id="aboutus-btn" onClick={() => navigate("/aboutus")}>
+                        Sobre nós
+                      </button>
+                      <button
+                        className="user-area-button"
+                        onClick={() => navigate("/user")}
+                      >
+                        Área do usuário
+                      </button>
+                    </div>
+                  </div>
                 ) : (
                   <>
-                    <button id="login-btn" onClick={() => navigate("/aboutus")}>
+                    <button id="aboutus-btn" onClick={() => navigate("/aboutus")}>
                       Sobre nós
                     </button>
                     <button id="login-btn" onClick={() => navigate("/login")}>
@@ -74,37 +81,53 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
           </>
         )}
         {variant === "aboutus" && (
-          <div>
-            <button className="back-button" onClick={() => navigate("/")}>
-              Voltar
-            </button>
-            <button onClick={() => navigate("/register")}>Cadastrar</button>
+          <div className="header-buttons">
+            <div className="left-buttons">
+              <button className="back-button" onClick={() => navigate("/")}>
+                Voltar
+              </button>
+            </div>
+            <div className="right-buttons">
+              <button onClick={() => navigate("/login")}>Entrar</button>
+              <button onClick={() => navigate("/register")}>Cadastrar</button>
+            </div>
           </div>
         )}
         {variant === "login" && (
-          <div>
-            <button className="back-button" onClick={() => navigate("/")}>
-              Voltar
-            </button>
-            <button onClick={() => navigate("/register")}>Cadastrar</button>
+          <div className="header-buttons">
+            <div className="left-buttons">
+              <button className="back-button" onClick={() => navigate("/")}>Voltar</button>
+            </div>
+            <div className="right-buttons">
+              <button id="aboutus-btn" onClick={() => navigate("/aboutus")}>Sobre nós</button>
+              <button onClick={() => navigate("/register")}>Cadastrar</button>
+            </div>
           </div>
         )}
         {variant === "register" && (
-          <div>
-            <button className="back-button" onClick={() => navigate("/")}>
-              Voltar
-            </button>
-            <button onClick={() => navigate("/login")}>Entrar</button>
+          <div className="header-buttons">
+            <div className="left-buttons">
+              <button className="back-button" onClick={() => navigate("/")}>Voltar</button>
+            </div>
+            <div className="right-buttons">
+              <button id="aboutus-btn" onClick={() => navigate("/aboutus")}>Sobre nós</button>
+              <button onClick={() => navigate("/login")}>Entrar</button>
+            </div>
           </div>
         )}
         {variant === "user" && (
           <div className="user-header">
-            <button className="back-button" onClick={() => navigate("/")}>
-              Voltar
-            </button>
-            <button className="logout-button" onClick={handleLogout}>
-              Logout
-            </button>
+            <div className="left-buttons">
+              <button className="back-button" onClick={() => navigate("/")}>
+                Voltar
+              </button>
+            </div>
+            <div className="right-buttons">
+              <button id="aboutus-btn" onClick={() => navigate("/aboutus")}>Sobre nós</button>
+              <button className="logout-button" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>          
           </div>
         )}
       </div>

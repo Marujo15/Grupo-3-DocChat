@@ -26,7 +26,7 @@ const AboutUs: React.FC = () => {
               <strong>pergunta ao chat</strong>, que realizará uma{" "}
               <strong>busca por similaridade</strong> no banco de dados vetorial
               e conseguirá oferecer{" "}
-              <strong>respostas contextualizadas e precisas</strong>.
+              <strong>respostas relacionadas às URLs submetidas de maneira precisa</strong>.
             </li>
           </ul>
           <p>
