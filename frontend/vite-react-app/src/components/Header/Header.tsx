@@ -10,7 +10,7 @@ import { createNewChat } from "../../utils/chatApi.ts";
 const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { addChat } = useChat();
+  const { currentChatId, setCurrentChatId, addChat } = useChat();
 
   const isAuthenticated = () => {
     return !!user;
@@ -27,11 +27,16 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
     try {
       const newChat = await createNewChat();
       addChat(newChat);
+      setCurrentChatId(newChat.id);
       navigate(`/chat/${newChat.id}`);
     } catch (error) {
       console.error("Error creating new chat:", error);
     }
   };
+
+  const handleBackButton = () => {
+    navigate(`/chat/${currentChatId}`);
+  }
 
   return (
     <header className={`header ${variant}`}>
@@ -85,20 +90,31 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
         {variant === "aboutus" && (
           <div className="header-buttons">
             <div className="left-buttons">
-              <button className="back-button" onClick={() => navigate("/")}>
+              <button className="back-button" onClick={() => handleBackButton()}>
                 Voltar
               </button>
             </div>
             <div className="right-buttons">
-              <button onClick={() => navigate("/login")}>Entrar</button>
-              <button onClick={() => navigate("/register")}>Cadastrar</button>
-            </div>
+              {!isAuthenticated() ? (
+                <>
+                  <button onClick={() => navigate("/login")}>Entrar</button>
+                  <button onClick={() => navigate("/register")}>Cadastrar</button>
+                </>
+              ) : (
+                  <button
+                    className="user-area-button"
+                    onClick={() => navigate("/user")}
+                    >
+                    Área do usuário
+                  </button>
+              )}
+              </div>
           </div>
         )}
         {variant === "login" && (
           <div className="header-buttons">
             <div className="left-buttons">
-              <button className="back-button" onClick={() => navigate("/")}>Voltar</button>
+              <button className="back-button" onClick={() => handleBackButton()}>Voltar</button>
             </div>
             <div className="right-buttons">
               <button id="aboutus-btn" onClick={() => navigate("/aboutus")}>Sobre nós</button>
@@ -109,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
         {variant === "register" && (
           <div className="header-buttons">
             <div className="left-buttons">
-              <button className="back-button" onClick={() => navigate("/")}>Voltar</button>
+              <button className="back-button" onClick={() => handleBackButton()}>Voltar</button>
             </div>
             <div className="right-buttons">
               <button id="aboutus-btn" onClick={() => navigate("/aboutus")}>Sobre nós</button>
@@ -120,7 +136,7 @@ const Header: React.FC<HeaderProps> = ({ variant = "default" }) => {
         {variant === "user" && (
           <div className="user-header">
             <div className="left-buttons">
-              <button className="back-button" onClick={() => navigate("/")}>
+              <button className="back-button" onClick={() => handleBackButton()}>
                 Voltar
               </button>
             </div>
